@@ -1,192 +1,551 @@
-<!doctype html>
-<html lang="bn">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Earning Dashboard</title>
-  <style>
-    :root{
-      --bg1:#071423; --bg2:#0a2a44; --card:#0c2236;
-      --line:rgba(255,255,255,.10);
-      --text:#e9f3ff; --muted:rgba(233,243,255,.70);
-      --accent1:#59d7ff; --accent2:#6d6bff;
-      --good:#45f58a; --bad:#ff6b7a; --warn:#ffd166;
-      --radius:18px;
-    }
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
-    body{
-      margin:0; color:var(--text);
-      background: radial-gradient(1200px 700px at 20% -10%, #103b66 0%, rgba(16,59,102,0) 60%),
-                  radial-gradient(900px 600px at 100% 20%, #2b2b70 0%, rgba(43,43,112,0) 55%),
-                  linear-gradient(180deg,var(--bg1),var(--bg2));
-      min-height:100vh;
-      padding:14px;
-    }
-    .wrap{max-width:980px;margin:0 auto}
-    .topStats{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin-bottom:12px;
-    }
-    .pill{
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      padding:10px 12px;border-radius:999px;
-      display:flex;gap:8px;align-items:center;
-      font-weight:800; color:var(--text);
-    }
-    .pill span{color:var(--muted);font-weight:700}
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      padding:16px;
-      box-shadow:0 18px 38px rgba(0,0,0,.35);
-    }
-    h2,h3{margin:0 0 10px}
-    .sub{color:var(--muted);font-weight:700;line-height:1.35}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media(max-width:820px){.grid2{grid-template-columns:1fr}}
-    .nav{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin:12px 0 14px;
-    }
-    .nav button{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.05);
-      color:var(--text);
-      padding:10px 14px;
-      border-radius:999px;
-      font-weight:900;
-      cursor:pointer;
-    }
-    .nav button.active{
-      background:linear-gradient(135deg,var(--accent2),var(--accent1));
-      border-color:rgba(255,255,255,.18);
-      box-shadow:0 12px 26px rgba(80,210,255,.18);
-    }
-    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-    .kpi{
-      flex:1; min-width:220px;
-      background:rgba(0,0,0,.20);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:12px;
-    }
-    .kpi .label{color:var(--muted);font-weight:800;font-size:13px}
-    .kpi .val{font-size:24px;font-weight:1000;margin-top:4px}
-    .kpi .val small{font-size:14px;color:var(--muted);font-weight:800}
-    .btn{
-      border:0;
-      background:linear-gradient(135deg,var(--accent2),var(--accent1));
-      color:#06121f;
-      font-weight:1000;
-      padding:12px 14px;
-      border-radius:14px;
-      cursor:pointer;
-      box-shadow:0 14px 28px rgba(80,210,255,.18);
-    }
-    .btn.secondary{
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      color:var(--text);
-      box-shadow:none;
-    }
-    .field{margin-top:10px}
-    .field label{display:block;color:var(--muted);font-weight:900;margin:0 0 8px}
-    .field input{
-      width:100%;
-      padding:14px 14px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.18);
-      color:var(--text);
-      outline:none;
-      font-weight:800;
-    }
-    .msg{margin-top:10px;font-weight:900}
-    .msg.good{color:var(--good)}
-    .msg.bad{color:var(--bad)}
-    .msg.warn{color:var(--warn)}
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
-    th{color:var(--muted);font-weight:900}
-    td{font-weight:800;color:rgba(233,243,255,.92)}
-    .me{color:var(--good)!important;font-weight:1000}
-    .hide{display:none !important}
-    .divider{height:1px;background:rgba(255,255,255,.10);margin:14px 0}
+<div class="k">My Referrals (browser demo)</div>
+          <div class="v" id="refCount">0</div>
+          <div class="sub">Tracked locally</div>
+        </div>
 
-    /* small toast (real data only) */
-    .toastWrap{
-      position:fixed; right:12px; top:120px; z-index:9999;
-      width:min(320px, calc(100vw - 24px));
-      display:flex;flex-direction:column;gap:10px;
-      pointer-events:none;
-    }
-    .toast{
-      background:rgba(10,20,35,.88);
-      border:1px solid rgba(255,255,255,.12);
-      color:#eaf2ff;border-radius:16px;
-      padding:12px 14px;
-      box-shadow:0 16px 30px rgba(0,0,0,.40);
-      backdrop-filter: blur(8px);
-      transform:translateX(10px);opacity:0;
-      transition:all .25s ease;
-    }
-    .toast.show{transform:translateX(0);opacity:1}
-    .toast .t{font-weight:1000;margin-bottom:4px}
-    .toast .s{font-weight:800;color:rgba(234,242,255,.85);font-size:13px;line-height:1.3}
-  </style>
-</head>
-<body>
-<div class="wrap">
-
-  <!-- Top counters -->
-  <div class="topStats">
-    <div class="pill"><span>Start:</span> <b id="startDate">11.12.2025</b></div>
-    <div class="pill"><span>Players:</span> <b id="playersCount">50431</b></div>
-    <div class="pill"><span>Online:</span> <b id="onlineCount">6244</b></div>
-  </div>
-
-  <!-- ABOUT + TOP USERS -->
-  <div class="card" id="aboutCard">
-    <h2>About</h2>
-    <div class="sub">
-      এখানে <b>Points</b> একটি গেম-ক্রেডিট। Worker কিনলে <b>Income/day</b> বাড়ে এবং সময় অনুযায়ী points auto বাড়ে।
-    </div>
-
-    <div class="divider"></div>
-
-    <h3>Top Users</h3>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:60px">#</th>
-          <th>Nick</th>
-          <th style="width:140px">Income / day</th>
-          <th style="width:140px">Points</th>
-        </tr>
-      </thead>
-      <tbody id="topUsersBody"></tbody>
-    </table>
-
-    <div class="divider"></div>
-
-    <div class="sub">
-      Referral link: <span id="refLink" style="word-break:break-all"></span>
-      <button class="btn secondary" id="copyRefBtn" style="margin-left:8px;padding:9px 12px;border-radius:12px">Copy</button>
+        <div class="hr"></div>
+        <button class="secondary" onclick="backToLanding()">Back Home</button>
+      </div>
     </div>
   </div>
 
-  <div style="height:12px"></div>
+<script>
+  // ==========================
+  // CONFIG (your rules)
+  // ==========================
+  const NEW_ACCOUNT_BONUS = 5000;
+  const REF_BONUS_TO_REFERRER = 500;
+  const WITHDRAW_MIN = 50000;
 
-  <!-- LOGIN CARD -->
-  <div class="card" id="loginCard">
-    <h2>Login / Register</h2>
+  // ==========================
+  // STORAGE MODEL
+  // ==========================
+  const DBKEY = "pe_points_v1";
 
-    <div class="field">
-      <label>Username</label>
-      <input id="username" autocomplete="username" placeholder="e.g. rohan" />
-    </div>
+  // Workers (shop items)
+  // price in points, rate in points/hour
+  const WORKERS = [
+    {id:"w_basic", name:"Basic Worker", icon:"👷", price: 1200, rate: 20, desc:"Starter worker"},
+    {id:"w_fast",  name:"Fast Worker",  icon:"⚡", price: 3500, rate: 65, desc:"Faster income"},
+    {id:"w_pro",   name:"Pro Worker",   icon:"🧠", price: 9000, rate: 180, desc:"Strong income"},
+    {id:"w_team",  name:"Team Worker",  icon:"👥", price: 22000, rate: 520, desc:"Team boost"},
+    {id:"w_vip",   name:"VIP Worker",   icon:"💎", price: 60000, rate: 1600, desc:"High income"}
+  ];
 
-    <div class="field">
-      <label>Password
+  function now(){ return Date.now(); }
+  function ts(t){ return new Date(t).toLocaleString(); }
+  function fmtInt(n){ return String(Math.floor(n)); }
+  function q(name){ return document.getElementById(name); }
+
+  function loadDB(){
+    const raw = localStorage.getItem(DBKEY);
+    if(!raw){
+      const deviceId = getOrCreateDeviceId();
+      const init = { deviceId, users:{}, session:null, deviceUsed:false };
+      localStorage.setItem(DBKEY, JSON.stringify(init));
+      return init;
+    }
+    try{ return JSON.parse(raw); }
+    catch(e){
+      localStorage.removeItem(DBKEY);
+      return loadDB();
+    }
+  }
+  function saveDB(db){ localStorage.setItem(DBKEY, JSON.stringify(db)); }
+
+  // best-effort device lock (same browser)
+  function getOrCreateDeviceId(){
+    const k = "pe_device_id";
+    let id = localStorage.getItem(k);
+    if(!id){
+      id = "dev_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+      localStorage.setItem(k, id);
+    }
+    return id;
+  }
+
+  function getUser(db){
+    if(!db.session) return null;
+    return db.users[db.session] || null;
+  }
+
+  // Auto income accrual
+  function computeRate(user){
+    let r = 0;
+    for(const o of user.owned){
+      const w = WORKERS.find(x=>x.id===o.id);
+      if(w) r += w.rate * o.qty;
+    }
+    return r; // points/hour
+  }
+
+  function accrue(db){
+    const user = getUser(db);
+    if(!user) return;
+    const t = now();
+    const dt = Math.max(0, t - user.lastTick);
+    user.lastTick = t;
+
+    const rateH = computeRate(user);
+    const rateMs = rateH / (3600*1000);
+    const earned = rateMs * dt;
+
+    if(earned > 0){
+      user.points += earned;
+      user.lifetime += earned;
+    }
+  }
+
+  // --------------------------
+  // Landing fake stats + top list
+  // --------------------------
+  function setLandingStats(){
+    const basePlayers = 50414;
+    const baseOnline = 6213;
+    q("playersCount").textContent = fmtInt(basePlayers + Math.random()*120);
+    q("onlineCount").textContent  = fmtInt(baseOnline + Math.random()*80);
+
+    // Top users sample (not “withdraw list”)
+    const rows = [
+      ["Denki",  "1086", "250000"],
+      ["Dali",   "1009", "232110"],
+      ["Andrea", "1002", "221400"],
+      ["Noomi",  "919",  "190800"],
+      ["Ayoub",  "890",  "176300"],
+    ];
+    const tb = q("topUsers");
+    tb.innerHTML = "";
+    rows.forEach(r=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${r[0]}</td><td class="right">${r[1]}</td><td class="right">${r[2]}</td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  function setReferralLinkUI(){
+    const base = location.origin + location.pathname;
+    const my = currentUsername() || "your_username";
+    q("refLink").textContent = base + "?ref=" + encodeURIComponent(my);
+    q("myRefLink").textContent = base + "?ref=" + encodeURIComponent(my);
+  }
+
+  function currentUsername(){
+    const db = loadDB();
+    return db.session;
+  }
+
+  // --------------------------
+  // Tabs
+  // --------------------------
+  function openTab(name){
+    const tabs = ["shop","inventory","withdraw","leaderboard","history"];
+    for(const t of tabs){
+      q("panel-"+t).classList.add("hide");
+      q("tab-"+t).classList.remove("active");
+    }
+    q("panel-"+name).classList.remove("hide");
+    q("tab-"+name).classList.add("active");
+  }
+
+  // --------------------------
+  // Render Shop / Inventory
+  // --------------------------
+  function renderShop(){
+    const db = loadDB();
+    const user = getUser(db);
+    const el = q("panel-shop");
+    el.innerHTML = "";
+
+    if(!user){
+      el.innerHTML = `<div class="toast"><span class="warn">Login required.</span></div>`;
+      return;
+    }
+
+    for(const w of WORKERS){
+      const can = user.points >= w.price;
+      const row = document.createElement("div");
+      row.className = "item";
+      row.innerHTML = `
+        <div class="left">
+          <div class="icon">${w.icon}</div>
+          <div>
+            <h3>${w.name}</h3>
+            <div class="meta">${w.desc} • +${w.rate} points/hour</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="price"><b>${w.price} points</b><span>one-time buy</span></div>
+          <button ${can ? "" : "disabled"} onclick="buyWorker('${w.id}')">${can ? "Buy" : "Low Balance"}</button>
+        </div>
+      `;
+      el.appendChild(row);
+    }
+  }
+
+  function renderInventory(){
+    const db = loadDB();
+    const user = getUser(db);
+    const list = q("ownedList");
+    list.innerHTML = "";
+
+    if(!user){
+      q("wCount").textContent = "0";
+      q("life").textContent = "0";
+      list.innerHTML = `<div class="toast">Login required.</div>`;
+      return;
+    }
+
+    const count = user.owned.reduce((a,b)=>a+b.qty,0);
+    q("wCount").textContent = String(count);
+    q("life").textContent = fmtInt(user.lifetime);
+
+    if(user.owned.length === 0){
+      list.innerHTML = `<div class="toast">No workers yet. Shop থেকে কিনো।</div>`;
+      return;
+    }
+
+    for(const o of user.owned){
+      const w = WORKERS.find(x=>x.id===o.id);
+      if(!w) continue;
+      const row = document.createElement("div");
+      row.className="item";
+      row.innerHTML = `
+        <div class="left">
+          <div class="icon">${w.icon}</div>
+          <div>
+            <h3>${w.name} × ${o.qty}</h3>
+            <div class="meta">Total: +${w.rate*o.qty} points/hour</div>
+          </div>
+        </div>
+        <div class="price"><b>${w.price} points</b><span>paid</span></div>
+      `;
+      list.appendChild(row);
+    }
+  }
+
+  // --------------------------
+  // Leaderboard / History / Withdraw
+  // --------------------------
+  function renderLeaderboard(){
+    const db = loadDB();
+    const user = getUser(db);
+    const tb = document.querySelector("#lbTable tbody");
+    tb.innerHTML = "";
+
+    const bots = [
+      {u:"alpha_whale", points: 180000, rate: 900},
+      {u:"hash_master", points: 140000, rate: 700},
+      {u:"rig_king",    points: 110000, rate: 520},
+      {u:"pool_vip",    points: 95000,  rate: 410},
+      {u:"fast_miner",  points: 65000,  rate: 260},
+    ];
+
+    let all = bots.map(b=>({u:b.u, score: b.points + b.rate*2}));
+    if(user){
+      const r = computeRate(user);
+      const score = user.points + r*2;
+      all.push({u: db.session, score});
+    }
+    all.sort((a,b)=>b.score-a.score);
+    all.slice(0,10).forEach((r,i)=>{
+      const me = (user && r.u === db.session);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${i+1}</td><td>${me?`<span class="good">${r.u} (you)</span>`:r.u}</td><td class="right">${fmtInt(r.score)}</td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderHistory(){
+    const db = loadDB();
+    const user = getUser(db);
+    const tb = document.querySelector("#hTable tbody");
+    tb.innerHTML = "";
+    if(!user){
+      tb.innerHTML = `<tr><td colspan="3">Login required.</td></tr>`;
+      return;
+    }
+    if(user.history.length === 0){
+      tb.innerHTML = `<tr><td colspan="3">No activity.</td></tr>`;
+      return;
+    }
+    user.history.slice(0,50).forEach(h=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${ts(h.t)}</td><td>${h.action}</td><td class="right">${h.change}</td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderWithdrawTable(){
+    const db = loadDB();
+    const user = getUser(db);
+    const tb = document.querySelector("#wTable tbody");
+    tb.innerHTML = "";
+    if(!user){
+      tb.innerHTML = `<tr><td colspan="4">Login required.</td></tr>`;
+      return;
+    }
+    if(user.withdraws.length === 0){
+      tb.innerHTML = `<tr><td colspan="4">No requests.</td></tr>`;
+      return;
+    }
+    user.withdraws.forEach(w=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${ts(w.t)}</td><td>${w.method}</td><td class="right">${fmtInt(w.amt)}</td><td><span class="warn">${w.status}</span></td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  // --------------------------
+  // Actions
+  // --------------------------
+  function buyWorker(id){
+    const db = loadDB();
+    const user = getUser(db);
+    if(!user) return;
+
+    accrue(db);
+    const w = WORKERS.find(x=>x.id===id);
+    if(!w) return;
+
+    if(user.points < w.price){
+      setMsg(`Balance কম। দরকার ${w.price} points`, "bad");
+      saveDB(db);
+      renderAll();
+      return;
+    }
+
+    user.points -= w.price;
+    const owned = user.owned.find(o=>o.id===id);
+    if(owned) owned.qty += 1;
+    else user.owned.push({id, qty:1});
+
+    user.history.unshift({t:now(), action:`Bought: ${w.name}`, change:`-${w.price}`});
+    user.history = user.history.slice(0,50);
+
+    saveDB(db);
+    setMsg(`Purchased ✅ ${w.name}`, "good");
+    renderAll();
+  }
+
+  function requestWithdraw(){
+    const db = loadDB();
+    const user = getUser(db);
+    if(!user) return;
+
+    accrue(db);
+
+    const method = q("wMethod").value;
+    const acc = (q("wAcc").value||"").trim();
+    const amt = Math.floor(parseFloat(q("wAmt").value||"0"));
+
+    if(acc.length < 6) return setMsg("Account/Wallet দাও।", "bad");
+    if(!(amt > 0)) return setMsg("Amount ঠিক দাও।", "bad");
+    if(amt < WITHDRAW_MIN) return setMsg(`Withdraw করতে minimum ${WITHDRAW_MIN} points লাগবে।`, "bad");
+    if(user.points < amt) return setMsg("Balance কম।", "bad");
+
+    // deduct to simulate "hold"
+    user.points -= amt;
+    user.withdraws.unshift({t:now(), method, amt, status:"Pending"});
+    user.withdraws = user.withdraws.slice(0,20);
+
+    user.history.unshift({t:now(), action:"Withdraw requested", change:`-${amt}`});
+    user.history = user.history.slice(0,50);
+
+    saveDB(db);
+    setMsg("Withdraw request submitted ✅", "good");
+    renderAll();
+  }
+
+  function fillWithdraw(){
+    q("wAcc").value = "YourWalletOrAccount";
+    q("wAmt").value = WITHDRAW_MIN;
+  }
+
+  // --------------------------
+  // Auth + Referral rules
+  // --------------------------
+  function getRefFromURL(){
+    const u = new URL(location.href);
+    const ref = (u.searchParams.get("ref") || "").trim().toLowerCase();
+    return ref || null;
+  }
+
+  function setMsg(text, cls){
+    q("msg").innerHTML = `<span class="${cls}">${text}</span>`;
+  }
+
+  function showLoader(text="Loading..."){
+    q("loadText").textContent = text;
+    q("overlay").style.display = "flex";
+  }
+  function hideLoader(){ q("overlay").style.display = "none"; }
+
+  function register(){
+    const db = loadDB();
+    const userName = (q("uName").value||"").trim().toLowerCase();
+    const pass = (q("uPass").value||"").trim();
+
+    if(userName.length < 3) return setMsg("Username কমপক্ষে 3 অক্ষর।", "bad");
+    if(pass.length < 4) return setMsg("Password কমপক্ষে 4 অক্ষর।", "bad");
+
+    // 1 device = 1 account (best-effort)
+    if(db.deviceUsed){
+      return setMsg("এই ডিভাইসে already একটি account আছে।", "bad");
+    }
+    if(db.users[userName]){
+      return setMsg("এই username আগে থেকে আছে। Login করো।", "warn");
+    }
+
+    const ref = getRefFromURL();
+
+    db.users[userName] = {
+      pass,
+      points: NEW_ACCOUNT_BONUS,
+      lifetime: NEW_ACCOUNT_BONUS,
+      lastTick: now(),
+      owned: [],
+      history: [{t:now(), action:"New account bonus", change:`+${NEW_ACCOUNT_BONUS}`}],
+      withdraws: [],
+      referredBy: ref || null
+    };
+
+    // referral bonus to referrer (if ref exists and ref user exists)
+    if(ref && db.users[ref] && ref !== userName){
+      db.users[ref].points += REF_BONUS_TO_REFERRER;
+      db.users[ref].lifetime += REF_BONUS_TO_REFERRER;
+      db.users[ref].history.unshift({t:now(), action:`Referral bonus (from ${userName})`, change:`+${REF_BONUS_TO_REFERRER}`});
+      // track ref count locally (browser)
+      db.users[ref].refCount = (db.users[ref].refCount||0) + 1;
+    }
+
+    db.session = userName;
+    db.deviceUsed = true; // lock after first register on this device
+    saveDB(db);
+
+    setMsg("Registered ✅ Bonus added + Logged in", "good");
+    showLoader("Entering dashboard...");
+    setTimeout(()=>{
+      hideLoader();
+      enterApp();
+    }, 900);
+  }
+
+  function login(){
+    const db = loadDB();
+    const userName = (q("uName").value||"").trim().toLowerCase();
+    const pass = (q("uPass").value||"").trim();
+
+    if(!db.users[userName]) return setMsg("User পাওয়া যায়নি।", "bad");
+    if(db.users[userName].pass !== pass) return setMsg("Password ভুল।", "bad");
+
+    db.session = userName;
+    db.users[userName].lastTick = now();
+    saveDB(db);
+
+    setMsg("Login successful ✅", "good");
+    showLoader("Loading your account...");
+    setTimeout(()=>{
+      hideLoader();
+      enterApp();
+    }, 700);
+  }
+
+  function logout(){
+    const db = loadDB();
+    db.session = null;
+    saveDB(db);
+    backToLanding();
+  }
+
+  function resetAll(){
+    localStorage.removeItem(DBKEY);
+    localStorage.removeItem("pe_device_id");
+    setMsg("All data reset ✅", "warn");
+    setLandingStats();
+  }
+
+  function goAppIfLogged(){
+    const db = loadDB();
+    if(!db.session) return setMsg("আগে Login করো।", "warn");
+    showLoader("Opening dashboard...");
+    setTimeout(()=>{ hideLoader(); enterApp(); }, 600);
+  }
+
+  function enterApp(){
+    q("landing").classList.add("hide");
+    q("app").classList.remove("hide");
+    openTab("shop");
+    renderAll();
+  }
+
+  function backToLanding(){
+    q("app").classList.add("hide");
+    q("landing").classList.remove("hide");
+    setLandingStats();
+    setReferralLinkUI();
+  }
+
+  // --------------------------
+  // Render All
+  // --------------------------
+  function renderHeader(){
+    const db = loadDB();
+    const user = getUser(db);
+
+    if(!user){
+      q("who").textContent = "User: Guest";
+      q("points").textContent = "0";
+      q("rate").textContent = "0";
+      q("balBox").textContent = "0";
+      q("rateBox").textContent = "0";
+      q("refCount").textContent = "0";
+      setReferralLinkUI();
+      return;
+    }
+
+    accrue(db);
+    saveDB(db);
+
+    const r = computeRate(user);
+    q("who").textContent = "User: " + db.session;
+    q("points").textContent = fmtInt(user.points);
+    q("rate").textContent = fmtInt(r);
+    q("balBox").textContent = fmtInt(user.points);
+    q("rateBox").textContent = fmtInt(r);
+    q("refCount").textContent = String(user.refCount || 0);
+    setReferralLinkUI();
+  }
+
+  function renderAll(){
+    renderHeader();
+    renderShop();
+    renderInventory();
+    renderLeaderboard();
+    renderHistory();
+    renderWithdrawTable();
+  }
+
+  // --------------------------
+  // Tick loop
+  // --------------------------
+  setInterval(()=>{
+    const db = loadDB();
+    if(db.session){
+      accrue(db);
+      saveDB(db);
+      renderHeader();
+    }
+  }, 1000);
+
+  // init
+  (function init(){
+    setLandingStats();
+    setReferralLinkUI();
+    const db = loadDB();
+    if(db.session && !db.users[db.session]){
+      db.session = null;
+      saveDB(db);
+    }
+  })();
+</script>
+</body>
