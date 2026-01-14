@@ -1,43 +1,747 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Earning App</title>
-<style>
-body{font-family:Arial;background:#f2f2f2;margin:0}
-.header{background:#111;color:#fff;padding:15px;text-align:center}
-.box{background:#fff;margin:15px;padding:15px;border-radius:8px}
-.btn{display:block;background:#111;color:#fff;text-align:center;
-padding:10px;border-radius:5px;text-decoration:none;margin-top:10px}
-.small{color:gray;font-size:14px}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Crypto Miner Demo</title>
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#0b2a4a;
+      --card: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.06);
+      --border: rgba(255,255,255,.14);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --good:#44f27c;
+      --warn:#ffd84d;
+      --bad:#ff6b6b;
+      --accent:#7c6dff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background: radial-gradient(1000px 500px at 30% 10%, #2a3cff33, transparent 60%),
+                  radial-gradient(900px 600px at 70% 25%, #00ffd533, transparent 60%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .top{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+      padding:12px 14px;border:1px solid var(--border);background:var(--card);border-radius:16px;
+      backdrop-filter: blur(10px);
+    }
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{
+      width:40px;height:40px;border-radius:14px;
+      background: linear-gradient(135deg, #7c6dff, #00ffd5);
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+    .brand h1{margin:0;font-size:16px;letter-spacing:.4px}
+    .tag{font-size:12px;color:var(--muted)}
+    .pill{
+      display:inline-flex;gap:8px;align-items:center;
+      padding:8px 10px;border:1px solid var(--border);border-radius:999px;background:var(--card2);
+      font-size:12px;color:var(--muted);
+    }
+    .pill b{color:var(--text);font-weight:800}
+    .row{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+    @media(min-width:920px){ .row{grid-template-columns: 1.1fr .9fr;} }
+    .card{
+      border:1px solid var(--border);background:var(--card);
+      border-radius:18px;padding:14px;backdrop-filter: blur(10px);
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
+    }
+    .card h2{margin:0 0 10px;font-size:14px;letter-spacing:.3px}
+    .muted{color:var(--muted);font-size:12px;line-height:1.4}
+    .grid3{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:650px){ .grid3{grid-template-columns:1fr 1fr 1fr;} }
+    .mini{
+      border:1px solid var(--border);background:var(--card2);
+      border-radius:16px;padding:12px;
+    }
+    .mini .k{font-size:11px;color:var(--muted)}
+    .mini .v{font-size:18px;font-weight:900;margin-top:4px}
+    .mini .sub{font-size:11px;color:var(--muted);margin-top:4px}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    button{
+      border:0;cursor:pointer;color:white;font-weight:900;letter-spacing:.2px;
+      padding:10px 12px;border-radius:14px;
+      background: linear-gradient(135deg, var(--accent), #00ffd5);
+      box-shadow: 0 14px 30px rgba(0,0,0,.35);
+    }
+    button.secondary{
+      background: transparent;border:1px solid var(--border);box-shadow:none;color:var(--text);
+    }
+    button.danger{
+      background: linear-gradient(135deg, var(--bad), #ffb86b);
+    }
+    button:disabled{opacity:.45;cursor:not-allowed}
+    .tabs{
+      display:flex;gap:8px;flex-wrap:wrap;margin-top:10px
+    }
+    .tab{
+      padding:8px 10px;border-radius:999px;border:1px solid var(--border);
+      background:transparent;color:var(--muted);font-size:12px;font-weight:800;cursor:pointer;
+    }
+    .tab.active{background:var(--card2);color:var(--text)}
+    .list{display:grid;gap:10px;margin-top:12px}
+    .item{
+      border:1px solid var(--border);background:var(--card2);
+      border-radius:16px;padding:12px;display:flex;gap:10px;align-items:center;justify-content:space-between;
+    }
+    .item .left{display:flex;gap:10px;align-items:center}
+    .icon{
+      width:42px;height:42px;border-radius:14px;border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.15), transparent 60%);
+      font-size:20px;
+    }
+    .item h3{margin:0;font-size:13px}
+    .item .meta{font-size:11px;color:var(--muted);margin-top:2px}
+    .price{font-size:12px;color:var(--muted);text-align:right}
+    .price b{display:block;color:var(--text);font-size:13px}
+    .two{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:650px){ .two{grid-template-columns:1fr 1fr;} }
+    input, select{
+      width:100%;padding:10px 12px;border-radius:14px;
+      border:1px solid var(--border);background:rgba(0,0,0,.25);
+      color:var(--text);outline:none;
+    }
+    label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+    .toast{
+      margin-top:10px;padding:10px 12px;border-radius:14px;border:1px solid var(--border);
+      background:rgba(0,0,0,.25);font-size:12px;color:var(--muted);
+    }
+    .good{color:var(--good);font-weight:900}
+    .warn{color:var(--warn);font-weight:900}
+    .bad{color:var(--bad);font-weight:900}
+    .hr{height:1px;background:var(--border);margin:12px 0}
+    .table{
+      width:100%;border-collapse:collapse;margin-top:8px;font-size:12px;color:var(--muted);
+    }
+    .table th,.table td{padding:8px;border-bottom:1px solid rgba(255,255,255,.10);text-align:left}
+    .right{text-align:right}
+    .tiny{font-size:11px;color:var(--muted)}
+    .hide{display:none}
+    a{color:#a9a2ff;text-decoration:none}
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>Crypto Miner <span class="tag">DEMO</span></h1>
+          <div class="tag">Buy rigs → auto earn over time → withdraw request (demo)</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <div class="pill">User: <b id="userLabel">Guest</b></div>
+        <div class="pill">Mode: <b>Demo</b></div>
+        <button class="secondary" id="btnLogout" onclick="logout()" disabled>Logout</button>
+      </div>
+    </div>
 
-<div class="header">My Earning App</div>
+    <div class="row">
+      <!-- LEFT -->
+      <div class="card">
+        <h2>Dashboard</h2>
 
-<div class="box">
-<h3>Total Balance</h3>
-<h2>৳ 0.00</h2>
-<p class="small">Minimum payout ৳500</p>
-</div>
+        <div class="grid3">
+          <div class="mini">
+            <div class="k">Balance</div>
+            <div class="v" id="bal">0.0000</div>
+            <div class="sub">Token: <b>CRX (demo)</b></div>
+          </div>
+          <div class="mini">
+            <div class="k">Earning Rate</div>
+            <div class="v" id="rate">0.0000</div>
+            <div class="sub">CRX / hour</div>
+          </div>
+          <div class="mini">
+            <div class="k">Status</div>
+            <div class="v" id="status">Idle</div>
+            <div class="sub">Auto updates every second</div>
+          </div>
+        </div>
 
-<div class="box">
-<h3>Tasks</h3>
-<p>Complete tasks to earn</p>
-<a class="btn" href="#">Start Task</a>
-</div>
+        <div class="btnrow">
+          <button onclick="openTab('shop')">Open Shop</button>
+          <button class="secondary" onclick="openTab('inventory')">Inventory</button>
+          <button class="secondary" onclick="openTab('withdraw')">Withdraw (Demo)</button>
+          <button class="secondary" onclick="openTab('leaderboard')">Leaderboard</button>
+        </div>
 
-<div class="box">
-<h3>Payout</h3>
-<a class="btn" href="#">Request Payout</a>
-</div>
+        <div class="hr"></div>
 
-<div class="box">
-<h3>Support</h3>
-<p>Email: support@example.com</p>
-</div>
+        <div class="tabs">
+          <div class="tab active" id="tab-shop" onclick="openTab('shop')">Shop</div>
+          <div class="tab" id="tab-inventory" onclick="openTab('inventory')">Inventory</div>
+          <div class="tab" id="tab-withdraw" onclick="openTab('withdraw')">Withdraw</div>
+          <div class="tab" id="tab-leaderboard" onclick="openTab('leaderboard')">Leaderboard</div>
+          <div class="tab" id="tab-history" onclick="openTab('history')">History</div>
+        </div>
 
+        <!-- SHOP -->
+        <div id="panel-shop" class="list">
+          <!-- items injected -->
+        </div>
+
+        <!-- INVENTORY -->
+        <div id="panel-inventory" class="hide">
+          <div class="two">
+            <div class="mini">
+              <div class="k">Your Rigs</div>
+              <div class="v" id="rigCount">0</div>
+              <div class="sub">Total owned items</div>
+            </div>
+            <div class="mini">
+              <div class="k">Lifetime Earned</div>
+              <div class="v" id="lifeEarn">0.0000</div>
+              <div class="sub">CRX</div>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+          <div class="muted">Owned Items</div>
+          <div class="list" id="ownedList"></div>
+        </div>
+
+        <!-- WITHDRAW -->
+        <div id="panel-withdraw" class="hide">
+          <div class="toast">
+            <span class="warn">Demo Notice:</span> This is a UI + local demo system. No real payments are processed.
+          </div>
+
+          <label>Network</label>
+          <select id="wNetwork">
+            <option>TRC20 (Demo)</option>
+            <option>BEP20 (Demo)</option>
+            <option>ERC20 (Demo)</option>
+          </select>
+
+          <label>Wallet Address</label>
+          <input id="wAddress" placeholder="Paste your wallet address (demo)" />
+
+          <label>Amount (CRX)</label>
+          <input id="wAmount" type="number" min="0" step="0.0001" placeholder="e.g., 25" />
+
+          <div class="btnrow">
+            <button onclick="requestWithdraw()">Request Withdraw</button>
+            <button class="secondary" onclick="fillDemoWithdraw()">Auto Fill Demo</button>
+          </div>
+
+          <div class="hr"></div>
+          <div class="muted">Withdraw Requests (demo log)</div>
+          <table class="table" id="wTable">
+            <thead>
+              <tr><th>Date</th><th>Network</th><th>Amount</th><th>Status</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- LEADERBOARD -->
+        <div id="panel-leaderboard" class="hide">
+          <div class="muted">Top earners (demo). Your rank updates based on your balance + rate.</div>
+          <table class="table" id="lbTable">
+            <thead>
+              <tr><th>#</th><th>User</th><th class="right">Score</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="tiny" style="margin-top:8px">Score = Balance + (Rate × 2)</div>
+        </div>
+
+        <!-- HISTORY -->
+        <div id="panel-history" class="hide">
+          <div class="muted">Recent activity</div>
+          <table class="table" id="hTable">
+            <thead>
+              <tr><th>Date</th><th>Action</th><th class="right">Change</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card">
+        <h2>Login / Register</h2>
+        <div class="muted">Create a demo account. Your balance saves in your browser (localStorage).</div>
+
+        <div class="hr"></div>
+
+        <label>Username</label>
+        <input id="uName" placeholder="e.g., rohan" />
+
+        <label>Password</label>
+        <input id="uPass" type="password" placeholder="Create password" />
+
+        <div class="btnrow">
+          <button onclick="register()">Register</button>
+          <button class="secondary" onclick="login()">Login</button>
+        </div>
+
+        <div class="toast" id="msg">Not logged in.</div>
+
+        <div class="hr"></div>
+
+        <h2>Quick Rules (Demo System)</h2>
+        <ul class="muted">
+          <li>Shop থেকে rig/upgrade কিনলে <b>CRX/hour</b> বাড়ে।</li>
+          <li>সময় অনুযায়ী balance auto বাড়ে (প্রতি সেকেন্ডে)।</li>
+          <li>Withdraw শুধু request log করে (ডেমো)।</li>
+        </ul>
+
+        <div class="btnrow">
+          <button class="danger" onclick="resetDemo()">Reset Demo Data</button>
+        </div>
+
+        <div class="tiny" style="margin-top:10px">
+          Tip: If your site shows old cache, refresh twice or open in incognito.
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ========= Demo data model =========
+  const KEY = "cm_demo_v1";
+  const now = () => Date.now();
+
+  const SHOP = [
+    {id:"rig_nano",  name:"Nano Rig",   icon:"⚡", price: 8.0,   rate: 0.25, desc:"Entry rig for beginners"},
+    {id:"rig_mini",  name:"Mini Rig",   icon:"🧩", price: 18.0,  rate: 0.65, desc:"Better hash power"},
+    {id:"rig_pro",   name:"Pro Rig",    icon:"🖥️", price: 45.0,  rate: 1.80, desc:"Fast earning rig"},
+    {id:"rig_ultra", name:"Ultra Rig",  icon:"🚀", price: 110.0, rate: 4.80, desc:"High performance"},
+    {id:"boost_fan", name:"Cooling Boost", icon:"🌀", price: 25.0, rate: 1.20, desc:"Stability boost"},
+    {id:"boost_ai",  name:"AI Optimizer",  icon:"🤖", price: 60.0, rate: 3.00, desc:"Smart auto tuning"},
+    {id:"boost_pool",name:"VIP Pool",      icon:"💎", price: 150.0, rate: 8.50, desc:"Premium pool access"}
+  ];
+
+  function load(){
+    const raw = localStorage.getItem(KEY);
+    if(!raw){
+      const init = { users:{}, session:null };
+      localStorage.setItem(KEY, JSON.stringify(init));
+      return init;
+    }
+    try { return JSON.parse(raw); } catch(e){
+      localStorage.removeItem(KEY);
+      return load();
+    }
+  }
+  function save(db){ localStorage.setItem(KEY, JSON.stringify(db)); }
+
+  function getUser(db){
+    if(!db.session) return null;
+    return db.users[db.session] || null;
+  }
+
+  function computeRate(user){
+    let r = 0;
+    for(const it of user.owned){
+      const shop = SHOP.find(s=>s.id===it.id);
+      if(shop) r += shop.rate * it.qty;
+    }
+    return r; // CRX/hour
+  }
+
+  function accrue(db){
+    const user = getUser(db);
+    if(!user) return;
+
+    const t = now();
+    const dtMs = Math.max(0, t - user.lastTick);
+    user.lastTick = t;
+
+    const ratePerHour = computeRate(user);
+    const ratePerMs = ratePerHour / (3600 * 1000);
+    const earned = ratePerMs * dtMs;
+
+    if(earned > 0){
+      user.balance += earned;
+      user.lifetime += earned;
+      user.status = ratePerHour > 0 ? "Mining" : "Idle";
+    } else {
+      user.status = "Idle";
+    }
+  }
+
+  function fmt(n){ return (Math.floor(n*10000)/10000).toFixed(4); }
+  function fmt2(n){ return (Math.floor(n*100)/100).toFixed(2); }
+  function ts(d){ return new Date(d).toLocaleString(); }
+
+  // ========= Auth =========
+  function register(){
+    const db = load();
+    const u = (document.getElementById("uName").value || "").trim().toLowerCase();
+    const p = (document.getElementById("uPass").value || "").trim();
+    if(u.length < 3) return setMsg("Username কমপক্ষে 3 অক্ষর দাও।", "bad");
+    if(p.length < 4) return setMsg("Password কমপক্ষে 4 অক্ষর দাও।", "bad");
+    if(db.users[u]) return setMsg("এই username আগে থেকেই আছে। Login করো।", "warn");
+
+    db.users[u] = {
+      pass:p,
+      balance: 0,
+      lifetime: 0,
+      lastTick: now(),
+      owned: [],
+      history: [],
+      withdraws: [],
+      status:"Idle"
+    };
+    db.session = u;
+    save(db);
+    setMsg("Registered + Logged in ✅", "good");
+    renderAll();
+  }
+
+  function login(){
+    const db = load();
+    const u = (document.getElementById("uName").value || "").trim().toLowerCase();
+    const p = (document.getElementById("uPass").value || "").trim();
+    if(!db.users[u]) return setMsg("User পাওয়া যায়নি। Register করো।", "bad");
+    if(db.users[u].pass !== p) return setMsg("Password ভুল।", "bad");
+    db.session = u;
+    db.users[u].lastTick = now();
+    save(db);
+    setMsg("Login successful ✅", "good");
+    renderAll();
+  }
+
+  function logout(){
+    const db = load();
+    db.session = null;
+    save(db);
+    setMsg("Logged out.", "warn");
+    renderAll();
+  }
+
+  function resetDemo(){
+    localStorage.removeItem(KEY);
+    setMsg("Demo data reset ✅", "warn");
+    renderAll();
+  }
+
+  function setMsg(text, cls){
+    const el = document.getElementById("msg");
+    el.innerHTML = `<span class="${cls}">${text}</span>`;
+  }
+
+  // ========= Shop / Actions =========
+  function buy(id){
+    const db = load();
+    const user = getUser(db);
+    if(!user) return setMsg("আগে Login করো।", "warn");
+
+    accrue(db);
+    const item = SHOP.find(s=>s.id===id);
+    if(!item) return;
+
+    if(user.balance < item.price){
+      setMsg(`Balance কম। দরকার ${fmt2(item.price)} CRX (demo)`, "bad");
+      save(db);
+      renderAll();
+      return;
+    }
+
+    user.balance -= item.price;
+    const owned = user.owned.find(o=>o.id===id);
+    if(owned) owned.qty += 1;
+    else user.owned.push({id, qty:1});
+
+    user.history.unshift({t:now(), action:`Bought: ${item.name}`, change:`-${fmt2(item.price)} CRX`});
+    user.history = user.history.slice(0, 50);
+
+    save(db);
+    setMsg(`Purchased ✅ ${item.name}`, "good");
+    renderAll();
+  }
+
+  function addDemoFunds(){
+    const db = load();
+    const user = getUser(db);
+    if(!user) return setMsg("আগে Login করো।", "warn");
+    accrue(db);
+    user.balance += 25;
+    user.history.unshift({t:now(), action:"Demo top-up", change:"+25.00 CRX"});
+    save(db);
+    setMsg("Demo +25 CRX added ✅", "good");
+    renderAll();
+  }
+
+  function requestWithdraw(){
+    const db = load();
+    const user = getUser(db);
+    if(!user) return setMsg("আগে Login করো।", "warn");
+
+    accrue(db);
+
+    const net = document.getElementById("wNetwork").value;
+    const addr = (document.getElementById("wAddress").value || "").trim();
+    const amt = parseFloat(document.getElementById("wAmount").value || "0");
+
+    if(addr.length < 8) return setMsg("Wallet address দাও (demo)।", "bad");
+    if(!(amt > 0)) return setMsg("Amount ঠিক দাও।", "bad");
+    if(user.balance < amt) return setMsg("Balance কম।", "bad");
+
+    // Demo: we DO NOT deduct automatically like real payment; we log and optionally freeze.
+    user.balance -= amt; // mimic request hold
+    user.withdraws.unshift({t:now(), net, amt, status:"Pending (Demo)"});
+    user.history.unshift({t:now(), action:"Withdraw requested", change:`-${fmt(amt)} CRX`});
+    user.withdraws = user.withdraws.slice(0, 20);
+    user.history = user.history.slice(0, 50);
+
+    save(db);
+    setMsg("Withdraw request submitted ✅ (demo)", "good");
+    renderAll();
+  }
+
+  function fillDemoWithdraw(){
+    document.getElementById("wAddress").value = "TXYZ_DEMO_WALLET_123456789";
+    document.getElementById("wAmount").value = "5";
+  }
+
+  // ========= UI =========
+  function openTab(name){
+    const tabs = ["shop","inventory","withdraw","leaderboard","history"];
+    for(const t of tabs){
+      document.getElementById("panel-"+t).classList.add("hide");
+      document.getElementById("tab-"+t).classList.remove("active");
+    }
+    document.getElementById("panel-"+name).classList.remove("hide");
+    document.getElementById("tab-"+name).classList.add("active");
+  }
+
+  function renderShop(){
+    const el = document.getElementById("panel-shop");
+    el.innerHTML = "";
+
+    const db = load();
+    const user = getUser(db);
+    const bal = user ? user.balance : 0;
+
+    // Add a demo fund button on top (only UI)
+    const top = document.createElement("div");
+    top.className = "item";
+    top.innerHTML = `
+      <div class="left">
+        <div class="icon">🧪</div>
+        <div>
+          <h3>Demo Balance Top-up</h3>
+          <div class="meta">Add demo CRX to test buying</div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="price"><b>+25.00 CRX</b><span>test only</span></div>
+        <button onclick="addDemoFunds()">Add</button>
+      </div>`;
+    el.appendChild(top);
+
+    for(const s of SHOP){
+      const can = bal >= s.price;
+      const row = document.createElement("div");
+      row.className = "item";
+      row.innerHTML = `
+        <div class="left">
+          <div class="icon">${s.icon}</div>
+          <div>
+            <h3>${s.name}</h3>
+            <div class="meta">${s.desc} • +${fmt(s.rate)} CRX/hour</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="price"><b>${fmt2(s.price)} CRX</b><span>one-time buy</span></div>
+          <button ${can ? "" : "disabled"} onclick="buy('${s.id}')">${can ? "Buy" : "Low Balance"}</button>
+        </div>
+      `;
+      el.appendChild(row);
+    }
+  }
+
+  function renderOwned(){
+    const db = load();
+    const user = getUser(db);
+    const list = document.getElementById("ownedList");
+    list.innerHTML = "";
+
+    if(!user){
+      list.innerHTML = `<div class="toast">Login করলে inventory দেখাবে।</div>`;
+      document.getElementById("rigCount").textContent = "0";
+      document.getElementById("lifeEarn").textContent = "0.0000";
+      return;
+    }
+
+    const count = user.owned.reduce((a,b)=>a+b.qty,0);
+    document.getElementById("rigCount").textContent = String(count);
+    document.getElementById("lifeEarn").textContent = fmt(user.lifetime);
+
+    if(user.owned.length === 0){
+      list.innerHTML = `<div class="toast">No items yet. Shop থেকে কিনো।</div>`;
+      return;
+    }
+
+    for(const o of user.owned){
+      const s = SHOP.find(x=>x.id===o.id);
+      if(!s) continue;
+      const row = document.createElement("div");
+      row.className = "item";
+      row.innerHTML = `
+        <div class="left">
+          <div class="icon">${s.icon}</div>
+          <div>
+            <h3>${s.name} × ${o.qty}</h3>
+            <div class="meta">Total boost: +${fmt(s.rate*o.qty)} CRX/hour</div>
+          </div>
+        </div>
+        <div class="price"><b>${fmt2(s.price)} CRX</b><span>paid</span></div>
+      `;
+      list.appendChild(row);
+    }
+  }
+
+  function renderWithdraws(){
+    const db = load();
+    const user = getUser(db);
+    const tb = document.querySelector("#wTable tbody");
+    tb.innerHTML = "";
+    if(!user){
+      tb.innerHTML = `<tr><td colspan="4">Login required.</td></tr>`;
+      return;
+    }
+    if(user.withdraws.length === 0){
+      tb.innerHTML = `<tr><td colspan="4">No withdraw requests yet.</td></tr>`;
+      return;
+    }
+    for(const w of user.withdraws){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${ts(w.t)}</td>
+        <td>${w.net}</td>
+        <td>${fmt(w.amt)} CRX</td>
+        <td><span class="warn">${w.status}</span></td>
+      `;
+      tb.appendChild(tr);
+    }
+  }
+
+  function renderHistory(){
+    const db = load();
+    const user = getUser(db);
+    const tb = document.querySelector("#hTable tbody");
+    tb.innerHTML = "";
+    if(!user){
+      tb.innerHTML = `<tr><td colspan="3">Login required.</td></tr>`;
+      return;
+    }
+    if(user.history.length === 0){
+      tb.innerHTML = `<tr><td colspan="3">No activity yet.</td></tr>`;
+      return;
+    }
+    for(const h of user.history){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${ts(h.t)}</td>
+        <td>${h.action}</td>
+        <td class="right">${h.change}</td>
+      `;
+      tb.appendChild(tr);
+    }
+  }
+
+  function renderLeaderboard(){
+    const db = load();
+    const user = getUser(db);
+    const tb = document.querySelector("#lbTable tbody");
+    tb.innerHTML = "";
+
+    // demo bots
+    const bots = [
+      {u:"alpha_whale", score: 220},
+      {u:"hash_master", score: 178},
+      {u:"rig_king", score: 151},
+      {u:"pool_vip", score: 119},
+      {u:"fast_miner", score: 96},
+      {u:"crx_hunter", score: 72},
+    ];
+
+    let me = null;
+    if(user){
+      const rate = computeRate(user);
+      const score = user.balance + (rate * 2);
+      me = {u: db.session, score};
+    }
+
+    const all = [...bots];
+    if(me) all.push(me);
+
+    all.sort((a,b)=>b.score - a.score);
+
+    const top = all.slice(0, 10);
+    top.forEach((r, idx)=>{
+      const isMe = me && r.u === me.u;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${idx+1}</td>
+        <td>${isMe ? `<span class="good">${r.u} (you)</span>` : r.u}</td>
+        <td class="right">${fmt2(r.score)}</td>
+      `;
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderHeader(){
+    const db = load();
+    const user = getUser(db);
+
+    document.getElementById("btnLogout").disabled = !user;
+    document.getElementById("userLabel").textContent = user ? db.session : "Guest";
+
+    if(!user){
+      document.getElementById("bal").textContent = "0.0000";
+      document.getElementById("rate").textContent = "0.0000";
+      document.getElementById("status").textContent = "Idle";
+      return;
+    }
+
+    const rate = computeRate(user);
+    document.getElementById("bal").textContent = fmt(user.balance);
+    document.getElementById("rate").textContent = fmt(rate);
+    document.getElementById("status").textContent = user.status || (rate>0 ? "Mining" : "Idle");
+  }
+
+  function renderAll(){
+    // Ensure accrual is applied before rendering
+    const db = load();
+    accrue(db);
+    save(db);
+
+    renderHeader();
+    renderShop();
+    renderOwned();
+    renderWithdraws();
+    renderLeaderboard();
+    renderHistory();
+  }
+
+  // ========= tick loop =========
+  setInterval(()=>{ renderAll(); }, 1000);
+
+  // initial render
+  (function init(){
+    const db = load();
+    if(db.session && !db.users[db.session]){ db.session=null; save(db); }
+    setMsg("Not logged in.", "warn");
+    renderAll();
+  })();
+</script>
 </body>
-</html>
+              </html>
