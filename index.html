@@ -1,551 +1,305 @@
-<div class="k">My Referrals (browser demo)</div>
-          <div class="v" id="refCount">0</div>
-          <div class="sub">Tracked locally</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Earning Site</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+    body{background:#0b1220;color:#fff;}
+    .container{max-width:420px;margin:auto;padding:16px;}
+    .card{background:#121a2b;border-radius:14px;padding:16px;box-shadow:0 0 20px rgba(0,0,0,.3);margin-top:14px;}
+    h1{font-size:20px;text-align:center;}
+    input,button{width:100%;padding:12px;border:none;border-radius:10px;margin-top:10px;font-size:15px;}
+    input{background:#1c2740;color:#fff;outline:none;}
+    button{background:#00c2ff;color:#000;font-weight:bold;cursor:pointer;}
+    button:hover{opacity:.9;}
+    .row{display:flex;gap:10px;margin-top:10px;}
+    .row .box{flex:1;background:#1c2740;border-radius:12px;padding:10px;text-align:center;}
+    .box h2{font-size:16px;margin-bottom:6px;}
+    .box p{font-size:14px;color:#cfefff;}
+    .hidden{display:none;}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+    .badge{background:#00c2ff;color:#000;padding:6px 10px;border-radius:999px;font-weight:bold;font-size:13px;}
+    .small{font-size:12px;color:#bcd;}
+    .task{background:#1c2740;border-radius:12px;padding:12px;margin-top:10px;}
+    .task h3{font-size:15px;}
+    .task p{font-size:13px;color:#cfefff;margin-top:6px;}
+    .task button{margin-top:10px;background:#22ff88;}
+    .logout{background:#ff3b3b;color:#fff;}
+    .popupOverlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.75);
+      display:flex;align-items:center;justify-content:center;z-index:9999;
+    }
+    .popup{
+      width:90%;max-width:360px;background:#121a2b;border-radius:14px;padding:16px;text-align:center;
+      box-shadow:0 0 30px rgba(0,0,0,.5);
+    }
+    .popup h2{font-size:18px;margin-bottom:8px;}
+    .popup p{font-size:13px;color:#cfefff;}
+    .popup button{margin-top:12px;}
+    .disabledBtn{background:#444!important;color:#aaa!important;cursor:not-allowed!important;}
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- OUTSIDE INTERFACE (BEFORE LOGIN) -->
+    <div id="outsideUI" class="card">
+      <h1>🔥 Welcome to Earning Platform</h1>
+      <p class="small" style="text-align:center;margin-top:8px;">
+        Login করে কাজ শুরু করো এবং Point earn করো 💰
+      </p>
+
+      <div class="row">
+        <div class="box">
+          <h2 id="onlineUsers">0</h2>
+          <p>Users Online</p>
+        </div>
+        <div class="box">
+          <h2 id="workers">0</h2>
+          <p>Workers Active</p>
+        </div>
+      </div>
+
+      <input id="username" type="text" placeholder="Enter Username" />
+      <input id="password" type="password" placeholder="Enter Password" />
+      <input id="referral" type="text" placeholder="Referral Code (Optional)" />
+      <button onclick="login()">Login / Register</button>
+
+      <p class="small" style="text-align:center;margin-top:10px;">
+        ⚠️ Same phone/device e 1 ta account e allow.
+      </p>
+    </div>
+
+    <!-- INSIDE INTERFACE (AFTER LOGIN) -->
+    <div id="insideUI" class="hidden">
+      <div class="topbar">
+        <div class="badge">Dashboard</div>
+        <button class="logout" onclick="logout()">Logout</button>
+      </div>
+
+      <div class="card">
+        <h1>👑 Welcome, <span id="userDisplay"></span></h1>
+        <p class="small" style="text-align:center;margin-top:8px;">
+          Balance Point: <b id="pointsDisplay">0</b>
+        </p>
+
+        <div class="row">
+          <div class="box">
+            <h2 id="onlineUsers2">0</h2>
+            <p>Users Online</p>
+          </div>
+          <div class="box">
+            <h2 id="workers2">0</h2>
+            <p>Workers Active</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h1>🎯 Tasks</h1>
+
+        <div class="task">
+          <h3>✅ Daily Claim</h3>
+          <p>Click করে 100 point collect করো (demo)</p>
+          <button onclick="claimPoints(100)">Claim +100</button>
         </div>
 
-        <div class="hr"></div>
-        <button class="secondary" onclick="backToLanding()">Back Home</button>
+        <div class="task">
+          <h3>👥 Referral Bonus</h3>
+          <p>Referral দিয়ে join করলে +500 point automatic</p>
+          <button class="disabledBtn" disabled>Auto Applied</button>
+        </div>
+
+        <div class="task">
+          <h3>⚙️ Auto Income Worker</h3>
+          <p>Worker buy করলে প্রতি মিনিটে income (demo)</p>
+          <button onclick="buyWorker()">Buy Worker (Cost 2000)</button>
+        </div>
+
+        <div class="task">
+          <h3>💸 Withdraw</h3>
+          <p>Withdraw করতে হলে 50,000 point লাগবে</p>
+          <button onclick="withdraw()">Withdraw Now</button>
+        </div>
       </div>
+    </div>
+
+  </div>
+
+  <!-- POPUP -->
+  <div id="popupOverlay" class="popupOverlay hidden">
+    <div class="popup">
+      <h2>⚠️ Notice</h2>
+      <p>
+        Login করার পর 8 seconds wait করতে হবে, তারপর Close option আসবে।
+      </p>
+      <button id="closePopupBtn" class="disabledBtn" disabled>Close (8s)</button>
     </div>
   </div>
 
 <script>
-  // ==========================
-  // CONFIG (your rules)
-  // ==========================
-  const NEW_ACCOUNT_BONUS = 5000;
-  const REF_BONUS_TO_REFERRER = 500;
-  const WITHDRAW_MIN = 50000;
-
-  // ==========================
-  // STORAGE MODEL
-  // ==========================
-  const DBKEY = "pe_points_v1";
-
-  // Workers (shop items)
-  // price in points, rate in points/hour
-  const WORKERS = [
-    {id:"w_basic", name:"Basic Worker", icon:"👷", price: 1200, rate: 20, desc:"Starter worker"},
-    {id:"w_fast",  name:"Fast Worker",  icon:"⚡", price: 3500, rate: 65, desc:"Faster income"},
-    {id:"w_pro",   name:"Pro Worker",   icon:"🧠", price: 9000, rate: 180, desc:"Strong income"},
-    {id:"w_team",  name:"Team Worker",  icon:"👥", price: 22000, rate: 520, desc:"Team boost"},
-    {id:"w_vip",   name:"VIP Worker",   icon:"💎", price: 60000, rate: 1600, desc:"High income"}
-  ];
-
-  function now(){ return Date.now(); }
-  function ts(t){ return new Date(t).toLocaleString(); }
-  function fmtInt(n){ return String(Math.floor(n)); }
-  function q(name){ return document.getElementById(name); }
-
-  function loadDB(){
-    const raw = localStorage.getItem(DBKEY);
-    if(!raw){
-      const deviceId = getOrCreateDeviceId();
-      const init = { deviceId, users:{}, session:null, deviceUsed:false };
-      localStorage.setItem(DBKEY, JSON.stringify(init));
-      return init;
-    }
-    try{ return JSON.parse(raw); }
-    catch(e){
-      localStorage.removeItem(DBKEY);
-      return loadDB();
-    }
+  // Fake live users/workers
+  function randomStats(){
+    let online = Math.floor(Math.random()*500)+50;
+    let workers = Math.floor(Math.random()*200)+20;
+    document.getElementById("onlineUsers").innerText = online;
+    document.getElementById("workers").innerText = workers;
+    document.getElementById("onlineUsers2").innerText = online;
+    document.getElementById("workers2").innerText = workers;
   }
-  function saveDB(db){ localStorage.setItem(DBKEY, JSON.stringify(db)); }
+  setInterval(randomStats, 2000);
+  randomStats();
 
-  // best-effort device lock (same browser)
-  function getOrCreateDeviceId(){
-    const k = "pe_device_id";
-    let id = localStorage.getItem(k);
-    if(!id){
-      id = "dev_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
-      localStorage.setItem(k, id);
+  // Storage keys
+  const DEVICE_LOCK_KEY = "deviceLocked";
+  const USER_KEY = "userData";
+
+  // Load session
+  window.onload = function(){
+    let userData = JSON.parse(localStorage.getItem(USER_KEY));
+    if(userData && userData.loggedIn){
+      showInside(userData);
     }
-    return id;
-  }
-
-  function getUser(db){
-    if(!db.session) return null;
-    return db.users[db.session] || null;
-  }
-
-  // Auto income accrual
-  function computeRate(user){
-    let r = 0;
-    for(const o of user.owned){
-      const w = WORKERS.find(x=>x.id===o.id);
-      if(w) r += w.rate * o.qty;
-    }
-    return r; // points/hour
-  }
-
-  function accrue(db){
-    const user = getUser(db);
-    if(!user) return;
-    const t = now();
-    const dt = Math.max(0, t - user.lastTick);
-    user.lastTick = t;
-
-    const rateH = computeRate(user);
-    const rateMs = rateH / (3600*1000);
-    const earned = rateMs * dt;
-
-    if(earned > 0){
-      user.points += earned;
-      user.lifetime += earned;
-    }
-  }
-
-  // --------------------------
-  // Landing fake stats + top list
-  // --------------------------
-  function setLandingStats(){
-    const basePlayers = 50414;
-    const baseOnline = 6213;
-    q("playersCount").textContent = fmtInt(basePlayers + Math.random()*120);
-    q("onlineCount").textContent  = fmtInt(baseOnline + Math.random()*80);
-
-    // Top users sample (not “withdraw list”)
-    const rows = [
-      ["Denki",  "1086", "250000"],
-      ["Dali",   "1009", "232110"],
-      ["Andrea", "1002", "221400"],
-      ["Noomi",  "919",  "190800"],
-      ["Ayoub",  "890",  "176300"],
-    ];
-    const tb = q("topUsers");
-    tb.innerHTML = "";
-    rows.forEach(r=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${r[0]}</td><td class="right">${r[1]}</td><td class="right">${r[2]}</td>`;
-      tb.appendChild(tr);
-    });
-  }
-
-  function setReferralLinkUI(){
-    const base = location.origin + location.pathname;
-    const my = currentUsername() || "your_username";
-    q("refLink").textContent = base + "?ref=" + encodeURIComponent(my);
-    q("myRefLink").textContent = base + "?ref=" + encodeURIComponent(my);
-  }
-
-  function currentUsername(){
-    const db = loadDB();
-    return db.session;
-  }
-
-  // --------------------------
-  // Tabs
-  // --------------------------
-  function openTab(name){
-    const tabs = ["shop","inventory","withdraw","leaderboard","history"];
-    for(const t of tabs){
-      q("panel-"+t).classList.add("hide");
-      q("tab-"+t).classList.remove("active");
-    }
-    q("panel-"+name).classList.remove("hide");
-    q("tab-"+name).classList.add("active");
-  }
-
-  // --------------------------
-  // Render Shop / Inventory
-  // --------------------------
-  function renderShop(){
-    const db = loadDB();
-    const user = getUser(db);
-    const el = q("panel-shop");
-    el.innerHTML = "";
-
-    if(!user){
-      el.innerHTML = `<div class="toast"><span class="warn">Login required.</span></div>`;
-      return;
-    }
-
-    for(const w of WORKERS){
-      const can = user.points >= w.price;
-      const row = document.createElement("div");
-      row.className = "item";
-      row.innerHTML = `
-        <div class="left">
-          <div class="icon">${w.icon}</div>
-          <div>
-            <h3>${w.name}</h3>
-            <div class="meta">${w.desc} • +${w.rate} points/hour</div>
-          </div>
-        </div>
-        <div style="text-align:right">
-          <div class="price"><b>${w.price} points</b><span>one-time buy</span></div>
-          <button ${can ? "" : "disabled"} onclick="buyWorker('${w.id}')">${can ? "Buy" : "Low Balance"}</button>
-        </div>
-      `;
-      el.appendChild(row);
-    }
-  }
-
-  function renderInventory(){
-    const db = loadDB();
-    const user = getUser(db);
-    const list = q("ownedList");
-    list.innerHTML = "";
-
-    if(!user){
-      q("wCount").textContent = "0";
-      q("life").textContent = "0";
-      list.innerHTML = `<div class="toast">Login required.</div>`;
-      return;
-    }
-
-    const count = user.owned.reduce((a,b)=>a+b.qty,0);
-    q("wCount").textContent = String(count);
-    q("life").textContent = fmtInt(user.lifetime);
-
-    if(user.owned.length === 0){
-      list.innerHTML = `<div class="toast">No workers yet. Shop থেকে কিনো।</div>`;
-      return;
-    }
-
-    for(const o of user.owned){
-      const w = WORKERS.find(x=>x.id===o.id);
-      if(!w) continue;
-      const row = document.createElement("div");
-      row.className="item";
-      row.innerHTML = `
-        <div class="left">
-          <div class="icon">${w.icon}</div>
-          <div>
-            <h3>${w.name} × ${o.qty}</h3>
-            <div class="meta">Total: +${w.rate*o.qty} points/hour</div>
-          </div>
-        </div>
-        <div class="price"><b>${w.price} points</b><span>paid</span></div>
-      `;
-      list.appendChild(row);
-    }
-  }
-
-  // --------------------------
-  // Leaderboard / History / Withdraw
-  // --------------------------
-  function renderLeaderboard(){
-    const db = loadDB();
-    const user = getUser(db);
-    const tb = document.querySelector("#lbTable tbody");
-    tb.innerHTML = "";
-
-    const bots = [
-      {u:"alpha_whale", points: 180000, rate: 900},
-      {u:"hash_master", points: 140000, rate: 700},
-      {u:"rig_king",    points: 110000, rate: 520},
-      {u:"pool_vip",    points: 95000,  rate: 410},
-      {u:"fast_miner",  points: 65000,  rate: 260},
-    ];
-
-    let all = bots.map(b=>({u:b.u, score: b.points + b.rate*2}));
-    if(user){
-      const r = computeRate(user);
-      const score = user.points + r*2;
-      all.push({u: db.session, score});
-    }
-    all.sort((a,b)=>b.score-a.score);
-    all.slice(0,10).forEach((r,i)=>{
-      const me = (user && r.u === db.session);
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${i+1}</td><td>${me?`<span class="good">${r.u} (you)</span>`:r.u}</td><td class="right">${fmtInt(r.score)}</td>`;
-      tb.appendChild(tr);
-    });
-  }
-
-  function renderHistory(){
-    const db = loadDB();
-    const user = getUser(db);
-    const tb = document.querySelector("#hTable tbody");
-    tb.innerHTML = "";
-    if(!user){
-      tb.innerHTML = `<tr><td colspan="3">Login required.</td></tr>`;
-      return;
-    }
-    if(user.history.length === 0){
-      tb.innerHTML = `<tr><td colspan="3">No activity.</td></tr>`;
-      return;
-    }
-    user.history.slice(0,50).forEach(h=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${ts(h.t)}</td><td>${h.action}</td><td class="right">${h.change}</td>`;
-      tb.appendChild(tr);
-    });
-  }
-
-  function renderWithdrawTable(){
-    const db = loadDB();
-    const user = getUser(db);
-    const tb = document.querySelector("#wTable tbody");
-    tb.innerHTML = "";
-    if(!user){
-      tb.innerHTML = `<tr><td colspan="4">Login required.</td></tr>`;
-      return;
-    }
-    if(user.withdraws.length === 0){
-      tb.innerHTML = `<tr><td colspan="4">No requests.</td></tr>`;
-      return;
-    }
-    user.withdraws.forEach(w=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${ts(w.t)}</td><td>${w.method}</td><td class="right">${fmtInt(w.amt)}</td><td><span class="warn">${w.status}</span></td>`;
-      tb.appendChild(tr);
-    });
-  }
-
-  // --------------------------
-  // Actions
-  // --------------------------
-  function buyWorker(id){
-    const db = loadDB();
-    const user = getUser(db);
-    if(!user) return;
-
-    accrue(db);
-    const w = WORKERS.find(x=>x.id===id);
-    if(!w) return;
-
-    if(user.points < w.price){
-      setMsg(`Balance কম। দরকার ${w.price} points`, "bad");
-      saveDB(db);
-      renderAll();
-      return;
-    }
-
-    user.points -= w.price;
-    const owned = user.owned.find(o=>o.id===id);
-    if(owned) owned.qty += 1;
-    else user.owned.push({id, qty:1});
-
-    user.history.unshift({t:now(), action:`Bought: ${w.name}`, change:`-${w.price}`});
-    user.history = user.history.slice(0,50);
-
-    saveDB(db);
-    setMsg(`Purchased ✅ ${w.name}`, "good");
-    renderAll();
-  }
-
-  function requestWithdraw(){
-    const db = loadDB();
-    const user = getUser(db);
-    if(!user) return;
-
-    accrue(db);
-
-    const method = q("wMethod").value;
-    const acc = (q("wAcc").value||"").trim();
-    const amt = Math.floor(parseFloat(q("wAmt").value||"0"));
-
-    if(acc.length < 6) return setMsg("Account/Wallet দাও।", "bad");
-    if(!(amt > 0)) return setMsg("Amount ঠিক দাও।", "bad");
-    if(amt < WITHDRAW_MIN) return setMsg(`Withdraw করতে minimum ${WITHDRAW_MIN} points লাগবে।`, "bad");
-    if(user.points < amt) return setMsg("Balance কম।", "bad");
-
-    // deduct to simulate "hold"
-    user.points -= amt;
-    user.withdraws.unshift({t:now(), method, amt, status:"Pending"});
-    user.withdraws = user.withdraws.slice(0,20);
-
-    user.history.unshift({t:now(), action:"Withdraw requested", change:`-${amt}`});
-    user.history = user.history.slice(0,50);
-
-    saveDB(db);
-    setMsg("Withdraw request submitted ✅", "good");
-    renderAll();
-  }
-
-  function fillWithdraw(){
-    q("wAcc").value = "YourWalletOrAccount";
-    q("wAmt").value = WITHDRAW_MIN;
-  }
-
-  // --------------------------
-  // Auth + Referral rules
-  // --------------------------
-  function getRefFromURL(){
-    const u = new URL(location.href);
-    const ref = (u.searchParams.get("ref") || "").trim().toLowerCase();
-    return ref || null;
-  }
-
-  function setMsg(text, cls){
-    q("msg").innerHTML = `<span class="${cls}">${text}</span>`;
-  }
-
-  function showLoader(text="Loading..."){
-    q("loadText").textContent = text;
-    q("overlay").style.display = "flex";
-  }
-  function hideLoader(){ q("overlay").style.display = "none"; }
-
-  function register(){
-    const db = loadDB();
-    const userName = (q("uName").value||"").trim().toLowerCase();
-    const pass = (q("uPass").value||"").trim();
-
-    if(userName.length < 3) return setMsg("Username কমপক্ষে 3 অক্ষর।", "bad");
-    if(pass.length < 4) return setMsg("Password কমপক্ষে 4 অক্ষর।", "bad");
-
-    // 1 device = 1 account (best-effort)
-    if(db.deviceUsed){
-      return setMsg("এই ডিভাইসে already একটি account আছে।", "bad");
-    }
-    if(db.users[userName]){
-      return setMsg("এই username আগে থেকে আছে। Login করো।", "warn");
-    }
-
-    const ref = getRefFromURL();
-
-    db.users[userName] = {
-      pass,
-      points: NEW_ACCOUNT_BONUS,
-      lifetime: NEW_ACCOUNT_BONUS,
-      lastTick: now(),
-      owned: [],
-      history: [{t:now(), action:"New account bonus", change:`+${NEW_ACCOUNT_BONUS}`}],
-      withdraws: [],
-      referredBy: ref || null
-    };
-
-    // referral bonus to referrer (if ref exists and ref user exists)
-    if(ref && db.users[ref] && ref !== userName){
-      db.users[ref].points += REF_BONUS_TO_REFERRER;
-      db.users[ref].lifetime += REF_BONUS_TO_REFERRER;
-      db.users[ref].history.unshift({t:now(), action:`Referral bonus (from ${userName})`, change:`+${REF_BONUS_TO_REFERRER}`});
-      // track ref count locally (browser)
-      db.users[ref].refCount = (db.users[ref].refCount||0) + 1;
-    }
-
-    db.session = userName;
-    db.deviceUsed = true; // lock after first register on this device
-    saveDB(db);
-
-    setMsg("Registered ✅ Bonus added + Logged in", "good");
-    showLoader("Entering dashboard...");
-    setTimeout(()=>{
-      hideLoader();
-      enterApp();
-    }, 900);
   }
 
   function login(){
-    const db = loadDB();
-    const userName = (q("uName").value||"").trim().toLowerCase();
-    const pass = (q("uPass").value||"").trim();
+    let username = document.getElementById("username").value.trim();
+    let password = document.getElementById("password").value.trim();
+    let referral = document.getElementById("referral").value.trim();
 
-    if(!db.users[userName]) return setMsg("User পাওয়া যায়নি।", "bad");
-    if(db.users[userName].pass !== pass) return setMsg("Password ভুল।", "bad");
-
-    db.session = userName;
-    db.users[userName].lastTick = now();
-    saveDB(db);
-
-    setMsg("Login successful ✅", "good");
-    showLoader("Loading your account...");
-    setTimeout(()=>{
-      hideLoader();
-      enterApp();
-    }, 700);
-  }
-
-  function logout(){
-    const db = loadDB();
-    db.session = null;
-    saveDB(db);
-    backToLanding();
-  }
-
-  function resetAll(){
-    localStorage.removeItem(DBKEY);
-    localStorage.removeItem("pe_device_id");
-    setMsg("All data reset ✅", "warn");
-    setLandingStats();
-  }
-
-  function goAppIfLogged(){
-    const db = loadDB();
-    if(!db.session) return setMsg("আগে Login করো।", "warn");
-    showLoader("Opening dashboard...");
-    setTimeout(()=>{ hideLoader(); enterApp(); }, 600);
-  }
-
-  function enterApp(){
-    q("landing").classList.add("hide");
-    q("app").classList.remove("hide");
-    openTab("shop");
-    renderAll();
-  }
-
-  function backToLanding(){
-    q("app").classList.add("hide");
-    q("landing").classList.remove("hide");
-    setLandingStats();
-    setReferralLinkUI();
-  }
-
-  // --------------------------
-  // Render All
-  // --------------------------
-  function renderHeader(){
-    const db = loadDB();
-    const user = getUser(db);
-
-    if(!user){
-      q("who").textContent = "User: Guest";
-      q("points").textContent = "0";
-      q("rate").textContent = "0";
-      q("balBox").textContent = "0";
-      q("rateBox").textContent = "0";
-      q("refCount").textContent = "0";
-      setReferralLinkUI();
+    if(!username || !password){
+      alert("Username & Password required!");
       return;
     }
 
-    accrue(db);
-    saveDB(db);
+    // Device lock check
+    let locked = localStorage.getItem(DEVICE_LOCK_KEY);
 
-    const r = computeRate(user);
-    q("who").textContent = "User: " + db.session;
-    q("points").textContent = fmtInt(user.points);
-    q("rate").textContent = fmtInt(r);
-    q("balBox").textContent = fmtInt(user.points);
-    q("rateBox").textContent = fmtInt(r);
-    q("refCount").textContent = String(user.refCount || 0);
-    setReferralLinkUI();
+    // If already locked and different username -> block
+    let existingUser = JSON.parse(localStorage.getItem(USER_KEY));
+    if(locked && existingUser && existingUser.username !== username){
+      alert("❌ Same phone e 2nd account create kora jabe na!");
+      return;
+    }
+
+    // First time register
+    if(!existingUser){
+      let points = 5000; // new account bonus
+      if(referral){
+        points += 500; // referral bonus
+      }
+
+      let userData = {
+        username,
+        password,
+        points,
+        workers: 0,
+        loggedIn: true
+      };
+
+      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+      localStorage.setItem(DEVICE_LOCK_KEY, "true");
+
+      showPopupThenInside(userData);
+      return;
+    }
+
+    // Login existing
+    if(existingUser.username === username && existingUser.password === password){
+      existingUser.loggedIn = true;
+      localStorage.setItem(USER_KEY, JSON.stringify(existingUser));
+      showPopupThenInside(existingUser);
+    } else {
+      alert("❌ Wrong username or password!");
+    }
   }
 
-  function renderAll(){
-    renderHeader();
-    renderShop();
-    renderInventory();
-    renderLeaderboard();
-    renderHistory();
-    renderWithdrawTable();
+  function showPopupThenInside(userData){
+    document.getElementById("popupOverlay").classList.remove("hidden");
+
+    let btn = document.getElementById("closePopupBtn");
+    btn.disabled = true;
+    btn.classList.add("disabledBtn");
+    let seconds = 8;
+    btn.innerText = "Close ("+seconds+"s)";
+
+    let timer = setInterval(()=>{
+      seconds--;
+      btn.innerText = "Close ("+seconds+"s)";
+      if(seconds<=0){
+        clearInterval(timer);
+        btn.disabled = false;
+        btn.classList.remove("disabledBtn");
+        btn.innerText = "Close";
+        btn.onclick = function(){
+          document.getElementById("popupOverlay").classList.add("hidden");
+          showInside(userData);
+        }
+      }
+    },1000);
   }
 
-  // --------------------------
-  // Tick loop
-  // --------------------------
+  function showInside(userData){
+    document.getElementById("outsideUI").classList.add("hidden");
+    document.getElementById("insideUI").classList.remove("hidden");
+
+    document.getElementById("userDisplay").innerText = userData.username;
+    document.getElementById("pointsDisplay").innerText = userData.points;
+  }
+
+  function logout(){
+    let userData = JSON.parse(localStorage.getItem(USER_KEY));
+    if(userData){
+      userData.loggedIn = false;
+      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    }
+    location.reload();
+  }
+
+  function claimPoints(amount){
+    let userData = JSON.parse(localStorage.getItem(USER_KEY));
+    userData.points += amount;
+    localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    document.getElementById("pointsDisplay").innerText = userData.points;
+    alert("✅ Claimed +" + amount + " points!");
+  }
+
+  function buyWorker(){
+    let userData = JSON.parse(localStorage.getItem(USER_KEY));
+    if(userData.points < 2000){
+      alert("❌ Worker buy করতে 2000 point লাগবে!");
+      return;
+    }
+    userData.points -= 2000;
+    userData.workers += 1;
+    localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    document.getElementById("pointsDisplay").innerText = userData.points;
+    alert("✅ Worker purchased! Auto income start (demo)");
+  }
+
+  // Auto income every minute (demo)
   setInterval(()=>{
-    const db = loadDB();
-    if(db.session){
-      accrue(db);
-      saveDB(db);
-      renderHeader();
+    let userData = JSON.parse(localStorage.getItem(USER_KEY));
+    if(userData && userData.loggedIn && userData.workers > 0){
+      userData.points += (userData.workers * 50); // 50 point per worker per minute
+      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+      document.getElementById("pointsDisplay").innerText = userData.points;
     }
-  }, 1000);
+  },60000);
 
-  // init
-  (function init(){
-    setLandingStats();
-    setReferralLinkUI();
-    const db = loadDB();
-    if(db.session && !db.users[db.session]){
-      db.session = null;
-      saveDB(db);
+  function withdraw(){
+    let userData = JSON.parse(localStorage.getItem(USER_KEY));
+    if(userData.points >= 50000){
+      alert("✅ Withdraw Request Submitted (demo)!");
+      userData.points -= 50000;
+      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+      document.getElementById("pointsDisplay").innerText = userData.points;
+    } else {
+      alert("❌ Withdraw করতে 50,000 point লাগবে!");
     }
-  })();
+  }
 </script>
 </body>
+          </html>
