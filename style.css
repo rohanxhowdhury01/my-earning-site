@@ -1,0 +1,195 @@
+:root{
+  --bg:#0b1220;
+  --card: rgba(255,255,255,0.08);
+  --card2: rgba(0,0,0,0.35);
+  --text:#e5e7eb;
+  --muted: rgba(255,255,255,0.75);
+  --green:#22c55e;
+  --red:#ef4444;
+  --blue:#3b82f6;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a{color:#93c5fd}
+
+.container{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.card{
+  background: var(--card);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 0 22px rgba(0,0,0,0.55);
+  margin: 14px 0;
+}
+
+.row{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+.col{
+  flex:1;
+  min-width: 260px;
+}
+
+header{
+  background:#111827;
+  padding: 14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position: sticky;
+  top:0;
+  z-index: 50;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.brand{
+  display:flex; align-items:center; gap:10px;
+  font-weight:700;
+}
+
+.badges{
+  display:flex;
+  gap: 10px;
+  flex-wrap:wrap;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.badge{
+  background: rgba(255,255,255,0.06);
+  padding: 8px 10px;
+  border-radius: 999px;
+}
+
+h1,h2,h3{margin:0 0 10px 0}
+p{margin: 6px 0; color: var(--muted); line-height: 1.5}
+
+input{
+  width:100%;
+  padding: 12px;
+  border-radius: 12px;
+  border:none;
+  outline:none;
+  background: rgba(255,255,255,0.12);
+  color: var(--text);
+  font-size: 15px;
+}
+
+input::placeholder{color: rgba(255,255,255,0.55)}
+
+button{
+  border:none;
+  outline:none;
+  cursor:pointer;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.btn-green{background: var(--green); color:#04130a}
+.btn-red{background: var(--red); color:#1b0606}
+.btn-blue{background: var(--blue); color:#06101c}
+
+.small{
+  font-size: 13px;
+  color: rgba(255,255,255,0.78);
+}
+
+.kpi{
+  background: var(--card2);
+  border-radius: 14px;
+  padding: 12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top: 10px;
+}
+
+.kpi b{font-size: 18px}
+
+.hr{
+  height:1px;
+  background: rgba(255,255,255,0.08);
+  margin: 12px 0;
+}
+
+.copybox{
+  background: rgba(0,0,0,0.28);
+  padding: 10px;
+  border-radius: 12px;
+  word-break: break-all;
+  font-size: 13px;
+}
+
+.notice{
+  background: rgba(59,130,246,0.18);
+  border: 1px solid rgba(59,130,246,0.35);
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.88);
+}
+
+/* ========== FULL SCREEN LOCK (HIDE BACKGROUND) ========== */
+.lock-overlay{
+  position: fixed;
+  inset: 0;
+  background: #070b16; /* solid তাই পিছনে কিছুই দেখা যাবে না */
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.lock-card{
+  width: min(520px, 100%);
+  background: #0e1730;
+  border-radius: 18px;
+  padding: 22px 18px;
+  box-shadow: 0 0 35px rgba(0,0,0,0.75);
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.lock-card h2{
+  margin: 0 0 10px 0;
+}
+
+.lock-card p{
+  margin: 0 0 16px 0;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+}
+
+.lock-btn{
+  width: 100%;
+  padding: 14px 14px;
+  border: none;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 16px;
+  background: #2a2f3a;
+  color: rgba(255,255,255,0.85);
+}
+
+.lock-btn:enabled{
+  background: #22c55e;
+  color: #04130a;
+  cursor: pointer;
+}
