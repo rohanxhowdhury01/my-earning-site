@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard | My Earning Site</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body onload="dashboardInit()">
+
+<header>
+  <div class="brand">💰 Dashboard</div>
+  <div class="badges">
+    <div class="badge">🟢 Online: <b id="online"></b></div>
+    <div class="badge">👷 Workers: <b id="workersGlobal"></b></div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>👤 User: <span id="userPhone"></span></h2>
+    <div class="kpi">
+      <span>⭐ Points</span>
+      <b id="points">0</b>
+    </div>
+    <p>Minimum Withdraw: <b>50,000 Points</b></p>
+  </div>
+
+  <div class="card">
+    <h3>🔗 Your Referral Link</h3>
+    <div class="copybox" id="refLink">loading...</div>
+    <div class="hr"></div>
+    <button class="btn-blue" onclick="copyRef()">Copy Referral Link</button>
+  </div>
+
+  <div class="card">
+    <h3>⚡ Worker Auto Income</h3>
+    <p>Worker কিনলে প্রতি <b>10 সেকেন্ডে</b> points বাড়বে (workers × 5)</p>
+    <div class="hr"></div>
+    <button class="btn-green" onclick="buyWorker()">Buy Worker (+5/10s)</button>
+    <div class="kpi">
+      <span>👷 Your Workers</span>
+      <b id="myWorkers">0</b>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🏦 Withdraw</h3>
+    <input id="withdrawAmount" type="number" placeholder="Enter Points to Withdraw"/>
+    <div class="hr"></div>
+    <button class="btn-green" onclick="withdraw()">Withdraw Now</button>
+    <div class="hr"></div>
+    <div class="copybox" id="withdrawMsg">—</div>
+  </div>
+
+  <div class="card">
+    <button class="btn-red" onclick="logout()">Logout</button>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
