@@ -3,303 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Earning Site</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
-    body{background:#0b1220;color:#fff;}
-    .container{max-width:420px;margin:auto;padding:16px;}
-    .card{background:#121a2b;border-radius:14px;padding:16px;box-shadow:0 0 20px rgba(0,0,0,.3);margin-top:14px;}
-    h1{font-size:20px;text-align:center;}
-    input,button{width:100%;padding:12px;border:none;border-radius:10px;margin-top:10px;font-size:15px;}
-    input{background:#1c2740;color:#fff;outline:none;}
-    button{background:#00c2ff;color:#000;font-weight:bold;cursor:pointer;}
-    button:hover{opacity:.9;}
-    .row{display:flex;gap:10px;margin-top:10px;}
-    .row .box{flex:1;background:#1c2740;border-radius:12px;padding:10px;text-align:center;}
-    .box h2{font-size:16px;margin-bottom:6px;}
-    .box p{font-size:14px;color:#cfefff;}
-    .hidden{display:none;}
-    .topbar{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
-    .badge{background:#00c2ff;color:#000;padding:6px 10px;border-radius:999px;font-weight:bold;font-size:13px;}
-    .small{font-size:12px;color:#bcd;}
-    .task{background:#1c2740;border-radius:12px;padding:12px;margin-top:10px;}
-    .task h3{font-size:15px;}
-    .task p{font-size:13px;color:#cfefff;margin-top:6px;}
-    .task button{margin-top:10px;background:#22ff88;}
-    .logout{background:#ff3b3b;color:#fff;}
-    .popupOverlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.75);
-      display:flex;align-items:center;justify-content:center;z-index:9999;
-    }
-    .popup{
-      width:90%;max-width:360px;background:#121a2b;border-radius:14px;padding:16px;text-align:center;
-      box-shadow:0 0 30px rgba(0,0,0,.5);
-    }
-    .popup h2{font-size:18px;margin-bottom:8px;}
-    .popup p{font-size:13px;color:#cfefff;}
-    .popup button{margin-top:12px;}
-    .disabledBtn{background:#444!important;color:#aaa!important;cursor:not-allowed!important;}
-  </style>
+  <title>Login | My Earning Site</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
 
-    <!-- OUTSIDE INTERFACE (BEFORE LOGIN) -->
-    <div id="outsideUI" class="card">
-      <h1>🔥 Welcome to Earning Platform</h1>
-      <p class="small" style="text-align:center;margin-top:8px;">
-        Login করে কাজ শুরু করো এবং Point earn করো 💰
-      </p>
-
-      <div class="row">
-        <div class="box">
-          <h2 id="onlineUsers">0</h2>
-          <p>Users Online</p>
-        </div>
-        <div class="box">
-          <h2 id="workers">0</h2>
-          <p>Workers Active</p>
-        </div>
-      </div>
-
-      <input id="username" type="text" placeholder="Enter Username" />
-      <input id="password" type="password" placeholder="Enter Password" />
-      <input id="referral" type="text" placeholder="Referral Code (Optional)" />
-      <button onclick="login()">Login / Register</button>
-
-      <p class="small" style="text-align:center;margin-top:10px;">
-        ⚠️ Same phone/device e 1 ta account e allow.
-      </p>
-    </div>
-
-    <!-- INSIDE INTERFACE (AFTER LOGIN) -->
-    <div id="insideUI" class="hidden">
-      <div class="topbar">
-        <div class="badge">Dashboard</div>
-        <button class="logout" onclick="logout()">Logout</button>
-      </div>
-
-      <div class="card">
-        <h1>👑 Welcome, <span id="userDisplay"></span></h1>
-        <p class="small" style="text-align:center;margin-top:8px;">
-          Balance Point: <b id="pointsDisplay">0</b>
-        </p>
-
-        <div class="row">
-          <div class="box">
-            <h2 id="onlineUsers2">0</h2>
-            <p>Users Online</p>
-          </div>
-          <div class="box">
-            <h2 id="workers2">0</h2>
-            <p>Workers Active</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h1>🎯 Tasks</h1>
-
-        <div class="task">
-          <h3>✅ Daily Claim</h3>
-          <p>Click করে 100 point collect করো (demo)</p>
-          <button onclick="claimPoints(100)">Claim +100</button>
-        </div>
-
-        <div class="task">
-          <h3>👥 Referral Bonus</h3>
-          <p>Referral দিয়ে join করলে +500 point automatic</p>
-          <button class="disabledBtn" disabled>Auto Applied</button>
-        </div>
-
-        <div class="task">
-          <h3>⚙️ Auto Income Worker</h3>
-          <p>Worker buy করলে প্রতি মিনিটে income (demo)</p>
-          <button onclick="buyWorker()">Buy Worker (Cost 2000)</button>
-        </div>
-
-        <div class="task">
-          <h3>💸 Withdraw</h3>
-          <p>Withdraw করতে হলে 50,000 point লাগবে</p>
-          <button onclick="withdraw()">Withdraw Now</button>
-        </div>
-      </div>
-    </div>
-
+<header>
+  <div class="brand">🔥 Welcome to Earning Platform</div>
+  <div class="badges">
+    <div class="badge">Secure Login</div>
+    <div class="badge">Referral + Points</div>
   </div>
+</header>
 
-  <!-- POPUP -->
-  <div id="popupOverlay" class="popupOverlay hidden">
-    <div class="popup">
-      <h2>⚠️ Notice</h2>
-      <p>
-        Login করার পর 8 seconds wait করতে হবে, তারপর Close option আসবে।
-      </p>
-      <button id="closePopupBtn" class="disabledBtn" disabled>Close (8s)</button>
+<div class="container">
+  <div class="card">
+    <h2>Login</h2>
+    <p class="small">Login করে কাজ শুরু করো এবং Point earn করো 💰</p>
+
+    <div class="row">
+      <div class="col">
+        <div class="kpi">
+          <span>Users Online</span>
+          <b id="usersOnline">230</b>
+        </div>
+      </div>
+      <div class="col">
+        <div class="kpi">
+          <span>Workers Active</span>
+          <b id="workersActive">160</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <input id="phone" type="text" placeholder="Enter Username" />
+    <div class="hr"></div>
+    <input id="password" type="password" placeholder="Enter Password" />
+
+    <div class="hr"></div>
+    <button class="btn-green" onclick="login()">Login</button>
+
+    <div class="hr"></div>
+    <div class="notice">
+      ✅ New Account Bonus: <b>5000 Points</b><br>
+      🎁 Referral Bonus: <b>500 Points</b><br>
+      💳 Withdraw Minimum: <b>50,000 Points</b>
     </div>
   </div>
+</div>
 
+<!-- FULL SCREEN LOCK NOTICE (Background Hidden) -->
+<div id="lockOverlay" class="lock-overlay" style="display:none;">
+  <div class="lock-card">
+    <h2>⚠️ Notice</h2>
+    <p>Login করার পর <b>8 seconds</b> wait করতে হবে, তারপর Close option আসবে।</p>
+    <button id="lockBtn" class="lock-btn" disabled>Close (8s)</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
 <script>
-  // Fake live users/workers
-  function randomStats(){
-    let online = Math.floor(Math.random()*500)+50;
-    let workers = Math.floor(Math.random()*200)+20;
-    document.getElementById("onlineUsers").innerText = online;
-    document.getElementById("workers").innerText = workers;
-    document.getElementById("onlineUsers2").innerText = online;
-    document.getElementById("workers2").innerText = workers;
-  }
-  setInterval(randomStats, 2000);
-  randomStats();
-
-  // Storage keys
-  const DEVICE_LOCK_KEY = "deviceLocked";
-  const USER_KEY = "userData";
-
-  // Load session
-  window.onload = function(){
-    let userData = JSON.parse(localStorage.getItem(USER_KEY));
-    if(userData && userData.loggedIn){
-      showInside(userData);
-    }
-  }
-
-  function login(){
-    let username = document.getElementById("username").value.trim();
-    let password = document.getElementById("password").value.trim();
-    let referral = document.getElementById("referral").value.trim();
-
-    if(!username || !password){
-      alert("Username & Password required!");
-      return;
-    }
-
-    // Device lock check
-    let locked = localStorage.getItem(DEVICE_LOCK_KEY);
-
-    // If already locked and different username -> block
-    let existingUser = JSON.parse(localStorage.getItem(USER_KEY));
-    if(locked && existingUser && existingUser.username !== username){
-      alert("❌ Same phone e 2nd account create kora jabe na!");
-      return;
-    }
-
-    // First time register
-    if(!existingUser){
-      let points = 5000; // new account bonus
-      if(referral){
-        points += 500; // referral bonus
-      }
-
-      let userData = {
-        username,
-        password,
-        points,
-        workers: 0,
-        loggedIn: true
-      };
-
-      localStorage.setItem(USER_KEY, JSON.stringify(userData));
-      localStorage.setItem(DEVICE_LOCK_KEY, "true");
-
-      showPopupThenInside(userData);
-      return;
-    }
-
-    // Login existing
-    if(existingUser.username === username && existingUser.password === password){
-      existingUser.loggedIn = true;
-      localStorage.setItem(USER_KEY, JSON.stringify(existingUser));
-      showPopupThenInside(existingUser);
-    } else {
-      alert("❌ Wrong username or password!");
-    }
-  }
-
-  function showPopupThenInside(userData){
-    document.getElementById("popupOverlay").classList.remove("hidden");
-
-    let btn = document.getElementById("closePopupBtn");
-    btn.disabled = true;
-    btn.classList.add("disabledBtn");
-    let seconds = 8;
-    btn.innerText = "Close ("+seconds+"s)";
-
-    let timer = setInterval(()=>{
-      seconds--;
-      btn.innerText = "Close ("+seconds+"s)";
-      if(seconds<=0){
-        clearInterval(timer);
-        btn.disabled = false;
-        btn.classList.remove("disabledBtn");
-        btn.innerText = "Close";
-        btn.onclick = function(){
-          document.getElementById("popupOverlay").classList.add("hidden");
-          showInside(userData);
-        }
-      }
-    },1000);
-  }
-
-  function showInside(userData){
-    document.getElementById("outsideUI").classList.add("hidden");
-    document.getElementById("insideUI").classList.remove("hidden");
-
-    document.getElementById("userDisplay").innerText = userData.username;
-    document.getElementById("pointsDisplay").innerText = userData.points;
-  }
-
-  function logout(){
-    let userData = JSON.parse(localStorage.getItem(USER_KEY));
-    if(userData){
-      userData.loggedIn = false;
-      localStorage.setItem(USER_KEY, JSON.stringify(userData));
-    }
-    location.reload();
-  }
-
-  function claimPoints(amount){
-    let userData = JSON.parse(localStorage.getItem(USER_KEY));
-    userData.points += amount;
-    localStorage.setItem(USER_KEY, JSON.stringify(userData));
-    document.getElementById("pointsDisplay").innerText = userData.points;
-    alert("✅ Claimed +" + amount + " points!");
-  }
-
-  function buyWorker(){
-    let userData = JSON.parse(localStorage.getItem(USER_KEY));
-    if(userData.points < 2000){
-      alert("❌ Worker buy করতে 2000 point লাগবে!");
-      return;
-    }
-    userData.points -= 2000;
-    userData.workers += 1;
-    localStorage.setItem(USER_KEY, JSON.stringify(userData));
-    document.getElementById("pointsDisplay").innerText = userData.points;
-    alert("✅ Worker purchased! Auto income start (demo)");
-  }
-
-  // Auto income every minute (demo)
-  setInterval(()=>{
-    let userData = JSON.parse(localStorage.getItem(USER_KEY));
-    if(userData && userData.loggedIn && userData.workers > 0){
-      userData.points += (userData.workers * 50); // 50 point per worker per minute
-      localStorage.setItem(USER_KEY, JSON.stringify(userData));
-      document.getElementById("pointsDisplay").innerText = userData.points;
-    }
-  },60000);
-
-  function withdraw(){
-    let userData = JSON.parse(localStorage.getItem(USER_KEY));
-    if(userData.points >= 50000){
-      alert("✅ Withdraw Request Submitted (demo)!");
-      userData.points -= 50000;
-      localStorage.setItem(USER_KEY, JSON.stringify(userData));
-      document.getElementById("pointsDisplay").innerText = userData.points;
-    } else {
-      alert("❌ Withdraw করতে 50,000 point লাগবে!");
-    }
-  }
+  // Fake online stats
+  document.getElementById("usersOnline").innerText = Math.floor(Math.random()*500)+100;
+  document.getElementById("workersActive").innerText = Math.floor(Math.random()*200)+50;
 </script>
 </body>
-          </html>
+</html>
