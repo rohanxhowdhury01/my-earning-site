@@ -3,63 +3,254 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard | My Earning Site</title>
+  <title>Top earning | Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body onload="dashboardInit()">
+<body>
+  <div class="bg"></div>
 
-<header>
-  <div class="brand">💰 Dashboard</div>
-  <div class="badges">
-    <div class="badge">🟢 Online: <b id="online"></b></div>
-    <div class="badge">👷 Workers: <b id="workersGlobal"></b></div>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">💰</span>
+        <div class="brandText">
+          <div class="brandTitle">Top earning</div>
+          <div class="brandSub">Dashboard</div>
+        </div>
+      </div>
+
+      <div class="chips">
+        <div class="chip"><span class="dot"></span><span id="chipOnline">Online: --</span></div>
+        <div class="chip">👷 <span id="chipWorkers">Workers: --</span></div>
+        <button class="btn ghost small" id="btnLogout">Logout</button>
+      </div>
+    </header>
+
+    <main class="dash">
+      <!-- SUMMARY -->
+      <section class="card glass">
+        <div class="row between wrapRow">
+          <div>
+            <div class="bigTitle">User: <span id="userPhone">—</span></div>
+            <div class="muted">Minimum withdraw: <b>50,000</b> points</div>
+          </div>
+          <div class="pill">
+            <div class="pillLabel">Points</div>
+            <div class="pillValue" id="points">0</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row gap wrapRow">
+          <div class="miniCard">
+            <div class="miniLabel">Daily cap</div>
+            <div class="miniValue" id="dailyCap">500</div>
+          </div>
+          <div class="miniCard">
+            <div class="miniLabel">Workers</div>
+            <div class="miniValue"><span id="workerCount">0</span>/<span id="workerLimit">500</span></div>
+          </div>
+          <div class="miniCard">
+            <div class="miniLabel">Income/day</div>
+            <div class="miniValue" id="incomePerDay">0</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MENU TABS -->
+      <section class="card glass">
+        <div class="tabs">
+          <button class="tab active" data-tab="shop">Shop</button>
+          <button class="tab" data-tab="myworkers">My Workers</button>
+          <button class="tab" data-tab="withdraw">Withdraw</button>
+          <button class="tab" data-tab="leaderboard">Desbod</button>
+          <button class="tab" data-tab="history">History</button>
+          <button class="tab" data-tab="free">Free Workers</button>
+          <button class="tab" data-tab="topup">Top Up</button>
+        </div>
+      </section>
+
+      <!-- SHOP -->
+      <section class="card glass tabPane" id="tab-shop">
+        <div class="paneTitle">Shop</div>
+        <div class="muted">Worker কিনলে Income/day বাড়বে। Income/day 24 ঘন্টায় ধীরে জমে Collect দিলে balance এ যোগ হবে।</div>
+
+        <div class="divider"></div>
+
+        <div class="shopGrid" id="shopList"></div>
+
+        <div class="divider"></div>
+
+        <div class="row gap wrapRow">
+          <div class="miniCard">
+            <div class="miniLabel">Worker limit upgrade</div>
+            <div class="miniValue">500 → 1000</div>
+            <div class="muted">Cost: <b>300</b> points</div>
+            <button class="btn primary small" id="btnLimitUp">Increase limit</button>
+          </div>
+
+          <div class="miniCard">
+            <div class="miniLabel">Daily cap upgrade</div>
+            <div class="miniValue" id="capLevelText">500 → 1000</div>
+            <div class="muted">Cost: <b id="capCostText">300</b> points</div>
+            <button class="btn primary small" id="btnCapUp">Increase cap</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MY WORKERS / COLLECT -->
+      <section class="card glass tabPane hidden" id="tab-myworkers">
+        <div class="paneTitle">My Workers</div>
+
+        <div class="row gap wrapRow">
+          <div class="miniCard">
+            <div class="miniLabel">Accrued (collectable)</div>
+            <div class="miniValue" id="accrued">0</div>
+            <div class="muted">Max: <b id="accruedMax">0</b> (24h cap)</div>
+          </div>
+
+          <div class="miniCard">
+            <div class="miniLabel">Last collect</div>
+            <div class="miniValue" id="lastCollect">—</div>
+            <div class="muted" id="rateText">Rate: 0/sec</div>
+          </div>
+
+          <div class="miniCard">
+            <div class="miniLabel">Collect</div>
+            <div class="miniValue">→ Balance</div>
+            <button class="btn primary" id="btnCollect">COLLECT</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="muted">আপনার কেনা worker list:</div>
+        <div class="list" id="myWorkerList"></div>
+      </section>
+
+      <!-- WITHDRAW -->
+      <section class="card glass tabPane hidden" id="tab-withdraw">
+        <div class="paneTitle">Withdraw</div>
+        <div class="muted">এখানে token address save করা যাবে। Withdraw দিলে status <b>Processing</b> দেখাবে।</div>
+
+        <div class="divider"></div>
+
+        <div class="tokenList" id="tokenList"></div>
+
+        <div class="divider"></div>
+
+        <div class="withdrawBox">
+          <div class="field">
+            <label>Select token</label>
+            <select id="wdToken" class="select"></select>
+          </div>
+          <div class="field">
+            <label>Withdraw points</label>
+            <input id="wdAmount" type="number" placeholder="Enter points amount">
+          </div>
+          <button class="btn primary" id="btnWithdraw">Withdraw</button>
+          <div class="muted" id="wdMsg"></div>
+        </div>
+      </section>
+
+      <!-- DESBOD -->
+      <section class="card glass tabPane hidden" id="tab-leaderboard">
+        <div class="paneTitle">Desbod</div>
+        <div class="muted">Daily income ভিত্তিতে list update হয় (দেখার সুবিধার জন্য)।</div>
+
+        <div class="divider"></div>
+
+        <div class="table">
+          <div class="tHead">
+            <div>#</div>
+            <div>User</div>
+            <div class="right">Workers</div>
+            <div class="right">Income/day</div>
+          </div>
+          <div id="lbBody"></div>
+        </div>
+      </section>
+
+      <!-- HISTORY -->
+      <section class="card glass tabPane hidden" id="tab-history">
+        <div class="paneTitle">History</div>
+        <div class="muted">সব income/expense এখানে থাকবে (সময়, category, amount, balance)।</div>
+
+        <div class="divider"></div>
+
+        <div class="history" id="historyList"></div>
+      </section>
+
+      <!-- FREE WORKERS -->
+      <section class="card glass tabPane hidden" id="tab-free">
+        <div class="paneTitle">Free Workers</div>
+        <div class="muted">Video দেখলে <b>+40</b> points (Daily limit আছে)।</div>
+
+        <div class="divider"></div>
+
+        <div class="row gap wrapRow">
+          <div class="miniCard">
+            <div class="miniLabel">Today remaining</div>
+            <div class="miniValue" id="freeRemain">0</div>
+            <div class="muted">Limit: <b id="freeLimit">10</b>/day</div>
+          </div>
+
+          <div class="miniCard">
+            <div class="miniLabel">Earned today</div>
+            <div class="miniValue" id="freeEarned">0</div>
+            <div class="muted">Per video: <b>+40</b></div>
+          </div>
+
+          <div class="miniCard">
+            <div class="miniLabel">Action</div>
+            <div class="miniValue">Watch</div>
+            <button class="btn primary" id="btnWatch">Watch video</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="notice">
+          “Watch video” চাপলে points add হবে এবং History তে entry হবে।
+        </div>
+      </section>
+
+      <!-- TOP UP -->
+      <section class="card glass tabPane hidden" id="tab-topup">
+        <div class="paneTitle">Top Up</div>
+        <div class="muted">নিচের address দুটো copy করে payment করতে পারবে।</div>
+
+        <div class="divider"></div>
+
+        <div class="addrCard">
+          <div class="addrRow">
+            <div>
+              <div class="addrLabel">Ethereum (ERC20)</div>
+              <div class="addrValue" id="addrEth">0x8eaf83d0463438b74c4a6d7c018f0e93bab988ec</div>
+            </div>
+            <button class="btn ghost" data-copy="addrEth">Copy</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="addrRow">
+            <div>
+              <div class="addrLabel">TRON (TRC20)</div>
+              <div class="addrValue" id="addrTron">TKkwEZEW8L6oyW7R2yxuWRHVDJ8L7RysK7</div>
+            </div>
+            <button class="btn ghost" data-copy="addrTron">Copy</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="notice">
+          Copy বাটনে চাপলে address কপি হবে। এই address গুলো UI থেকে change করা যাবে না।
+        </div>
+      </section>
+    </main>
   </div>
-</header>
 
-<div class="container">
-
-  <div class="card">
-    <h2>👤 User: <span id="userPhone"></span></h2>
-    <div class="kpi">
-      <span>⭐ Points</span>
-      <b id="points">0</b>
-    </div>
-    <p>Minimum Withdraw: <b>50,000 Points</b></p>
-  </div>
-
-  <div class="card">
-    <h3>🔗 Your Referral Link</h3>
-    <div class="copybox" id="refLink">loading...</div>
-    <div class="hr"></div>
-    <button class="btn-blue" onclick="copyRef()">Copy Referral Link</button>
-  </div>
-
-  <div class="card">
-    <h3>⚡ Worker Auto Income</h3>
-    <p>Worker কিনলে প্রতি <b>10 সেকেন্ডে</b> points বাড়বে (workers × 5)</p>
-    <div class="hr"></div>
-    <button class="btn-green" onclick="buyWorker()">Buy Worker (+5/10s)</button>
-    <div class="kpi">
-      <span>👷 Your Workers</span>
-      <b id="myWorkers">0</b>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>🏦 Withdraw</h3>
-    <input id="withdrawAmount" type="number" placeholder="Enter Points to Withdraw"/>
-    <div class="hr"></div>
-    <button class="btn-green" onclick="withdraw()">Withdraw Now</button>
-    <div class="hr"></div>
-    <div class="copybox" id="withdrawMsg">—</div>
-  </div>
-
-  <div class="card">
-    <button class="btn-red" onclick="logout()">Logout</button>
-  </div>
-
-</div>
-
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
