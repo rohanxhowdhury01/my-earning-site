@@ -3,71 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login | My Earning Site</title>
+  <title>Top earning</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="bg"></div>
 
-<header>
-  <div class="brand">🔥 Welcome to Earning Platform</div>
-  <div class="badges">
-    <div class="badge">Secure Login</div>
-    <div class="badge">Referral + Points</div>
-  </div>
-</header>
-
-<div class="container">
-  <div class="card">
-    <h2>Login</h2>
-    <p class="small">Login করে কাজ শুরু করো এবং Point earn করো 💰</p>
-
-    <div class="row">
-      <div class="col">
-        <div class="kpi">
-          <span>Users Online</span>
-          <b id="usersOnline">230</b>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">💰</span>
+        <div class="brandText">
+          <div class="brandTitle">Top earning</div>
+          <div class="brandSub">Login করে কাজ শুরু করো এবং point collect করো</div>
         </div>
       </div>
-      <div class="col">
-        <div class="kpi">
-          <span>Workers Active</span>
-          <b id="workersActive">160</b>
-        </div>
+
+      <div class="chips">
+        <div class="chip"><span class="dot"></span><span id="chipOnline">Online: --</span></div>
+        <div class="chip">👷 <span id="chipWorkers">Workers: --</span></div>
       </div>
-    </div>
+    </header>
 
-    <div class="hr"></div>
+    <main class="grid2">
+      <section class="card glass">
+        <h1 class="h1">Login</h1>
+        <p class="muted">একবার login করলে পরে আর password দিতে হবে না (Logout না করা পর্যন্ত)।</p>
 
-    <input id="phone" type="text" placeholder="Enter Username" />
-    <div class="hr"></div>
-    <input id="password" type="password" placeholder="Enter Password" />
+        <div class="field">
+          <label>Username / Phone</label>
+          <input id="phone" type="text" placeholder="Enter username" autocomplete="username">
+        </div>
 
-    <div class="hr"></div>
-    <button class="btn-green" onclick="login()">Login</button>
+        <div class="field">
+          <label>Password</label>
+          <input id="password" type="password" placeholder="Enter password" autocomplete="current-password">
+        </div>
 
-    <div class="hr"></div>
-    <div class="notice">
-      ✅ New Account Bonus: <b>5000 Points</b><br>
-      🎁 Referral Bonus: <b>500 Points</b><br>
-      💳 Withdraw Minimum: <b>50,000 Points</b>
-    </div>
+        <button class="btn primary" id="btnLogin">Login</button>
+
+        <div class="note">
+          New account bonus: <b>+5000</b> points<br/>
+          Referral bonus: <b>+500</b> points<br/>
+          Minimum withdraw: <b>50,000</b> points
+        </div>
+      </section>
+
+      <section class="card glass">
+        <h2 class="h2">Quick info</h2>
+
+        <div class="kpis">
+          <div class="kpi">
+            <div class="kLabel">Minimum withdraw</div>
+            <div class="kValue">50,000</div>
+          </div>
+          <div class="kpi">
+            <div class="kLabel">Video reward</div>
+            <div class="kValue">+40</div>
+          </div>
+          <div class="kpi">
+            <div class="kLabel">Start worker limit</div>
+            <div class="kValue">500</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="muted">
+          Income auto balance এ যাবে না। <b>Collect</b> চাপলে main balance এ যোগ হবে।<br/>
+          24 ঘন্টায় ধীরে ধীরে জমে <b>Daily cap</b> পর্যন্ত পৌঁছাবে।
+        </div>
+      </section>
+    </main>
   </div>
-</div>
 
-<!-- FULL SCREEN LOCK NOTICE (Background Hidden) -->
-<div id="lockOverlay" class="lock-overlay" style="display:none;">
-  <div class="lock-card">
-    <h2>⚠️ Notice</h2>
-    <p>Login করার পর <b>8 seconds</b> wait করতে হবে, তারপর Close option আসবে।</p>
-    <button id="lockBtn" class="lock-btn" disabled>Close (8s)</button>
-  </div>
-</div>
-
-<script src="app.js"></script>
-<script>
-  // Fake online stats
-  document.getElementById("usersOnline").innerText = Math.floor(Math.random()*500)+100;
-  document.getElementById("workersActive").innerText = Math.floor(Math.random()*200)+50;
-</script>
+  <script src="app.js"></script>
 </body>
 </html>
