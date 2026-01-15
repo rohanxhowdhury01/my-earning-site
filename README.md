@@ -1,2 +1,2 @@
-# my-earning-site
+# rx-earning-site
 My earning website
